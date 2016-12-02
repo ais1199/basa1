@@ -40,6 +40,9 @@ public:
     void putdata(part*,void*);
     QString reading;
     int cursor;
+    int cursor2;
+
+    //void set_int(void *base, int sizes[], int field_index, int value);
 
     void save();
     char* makechar(QString);

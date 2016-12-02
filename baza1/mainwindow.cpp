@@ -44,7 +44,7 @@ void MainWindow::loadobinfo()
     strcpy(buf1,"int\0");
     cur->name=buf1;
     cur->parts=zeropart;
-    cur->size=sizeof(int*);
+    cur->size=sizeof(int);
     cur->next=zeroobinf;
     /*cur->next=(struct obinf*)malloc(1*sizeof(struct obinf));
     cur=cur->next;
@@ -310,6 +310,7 @@ void MainWindow::addobgect()
     nwba->data=malloc(cot->size);
     reading= QString(ui->data->toPlainText());
     cursor=0;
+    cursor2=0;
     putdata(cot->parts,nwba->data);
     tester();
     //save();
@@ -321,12 +322,12 @@ void MainWindow::putdata(part *wp, void *data)
     char a[]="int";
     char b[]="char";
     bool ok;
-    void*d;
+    //void*d;
     //char *u;
     obinf*nana;
     QString s;
     QString c=QString("\n");
-    int*i;
+    //int*i;
     int prov;
     char *provc;
     //QPlainTextEdit
@@ -335,20 +336,21 @@ void MainWindow::putdata(part *wp, void *data)
         s=reading.section(c,cursor,cursor);
         if(0==strcmp(a,wp->tipe))
         {
-            i=(int*)malloc(sizeof(int));
-            *i=s.toInt(&ok,10);
-            data=(int*)i;
-            d=data+sizeof(int*);//-------------------тут зарыта фигня!
+            //i=(int*)malloc(sizeof(int));
+            *((int*)(data+cursor2))=s.toInt(&ok,10);//remont!!!
+            /*data=(int*)i;
+            d=data+sizeof(int*);//-------------------тут зарыта фигня!*/
             prov=*((int*)data);
             cursor++;
+            cursor+=sizeof(int);
         }
         else
         {
             if(0==strcmp(b,wp->tipe))
             {
-                data=(char*)makechar(s);
-                d=data+sizeof(char*);
-                provc=((char*)data);
+                ((char*)(data+cursor2)))=makechar(s);
+                provc=((char*)(data+cursor2));
+                cursor2+=sizeof(char*);
                 cursor++;
             }
             else
@@ -359,10 +361,10 @@ void MainWindow::putdata(part *wp, void *data)
                     if(nana->parts!=zeropart) putdata(nana->parts,data);
 
                 }
-                d=data+nana->size;
+                //d=data+nana->size;
             }
         }
-        putdata(wp->next,d);
+        putdata(wp->next,data);
     }
 }
 
@@ -377,16 +379,55 @@ void MainWindow::tester()
     ob*pi=curbast;
     void*data;
     int i;
+    //zi=0;
     char*j;
     while(pi!=zerodata)
     {
         data=pi->data;
         i=*((int*)data);
-        data+=sizeof(int*);
-        j=((char*)data);
-        i++;
+        //data+=sizeof(int*);
+
+        j=((char*)(data+sizeof(int)));
+        pi=pi->next;
     }
 }
+
+/**
+ * @brief get_int достаёт int из записи в БД
+ * @param base указатель на начало записи
+ * @param sizes массив размеров полей записи
+ * @param field_index индекс нужного поля в БД
+ * @return числовое значение нужного поля
+ */
+/*
+int get_int(void *base, int sizes[], int field_index)
+{
+    int offset = 0;
+    for(int i = 0; i < field_index - 1; ++i) {
+        offset += sizes[i];
+    }
+    return *((int*)(base + offset));
+}
+
+void set_int(void *base, int sizes[], int field_index, int value)
+{
+    int offset = 0;
+    for(int i = 0; i < field_index - 1; ++i) {
+        offset += sizes[i];
+    }
+    *((int*)(base + offset)) = value;
+}
+
+char * get_str(void *base, int sizes[], int field_index)
+{
+    int offset = 0;
+    for(int i = 0; i < field_index - 1; ++i) {
+        offset += sizes[i];
+    }
+    return (base + offset);
+}
+*/
+
 
 MainWindow::~MainWindow()
 {
