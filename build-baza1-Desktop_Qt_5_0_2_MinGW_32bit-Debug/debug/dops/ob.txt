@@ -1,0 +1,12 @@
+name f
+size 8
+consist
+ int|gg|4
+ char|pp|4
+
+name urur
+size 8
+consist
+ char|mama|4
+ int|papa|4
+
