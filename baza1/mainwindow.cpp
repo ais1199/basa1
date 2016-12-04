@@ -323,7 +323,7 @@ void MainWindow::putdata(part *wp, void *data)
     char b[]="char";
     bool ok;
     //void*d;
-    //char *u;
+    char *u;
     obinf*nana;
     QString s;
     QString c=QString("\n");
@@ -336,20 +336,19 @@ void MainWindow::putdata(part *wp, void *data)
         s=reading.section(c,cursor,cursor);
         if(0==strcmp(a,wp->tipe))
         {
-            //i=(int*)malloc(sizeof(int));
-            *((int*)(data+cursor2))=s.toInt(&ok,10);//remont!!!
-            /*data=(int*)i;
-            d=data+sizeof(int*);//-------------------тут зарыта фигня!*/
+            *((int*)(data+cursor2))=s.toInt(&ok,10);
+
             prov=*((int*)data);
             cursor++;
-            cursor+=sizeof(int);
+            cursor2+=sizeof(int);
         }
         else
         {
             if(0==strcmp(b,wp->tipe))
             {
-                ((char*)(data+cursor2)))=makechar(s);
-                provc=((char*)(data+cursor2));
+                u=(makechar(s));
+                *((char**)(data+cursor2))=u;
+                provc=*((char**)(data+cursor2));
                 cursor2+=sizeof(char*);
                 cursor++;
             }
