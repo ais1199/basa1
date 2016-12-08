@@ -11,8 +11,10 @@
 #include <QLabel>
 #include <QPlainTextEdit>
 
+//---------------------------------------------Remaid in vectors
 //SIZES IS FAILING!!!
-//-------------------------------------------ATTENTION!!! A LOT OF WAYS TO CREATE HOROROR
+
+//Запуск виджета в исходном виде.
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow)
@@ -20,32 +22,38 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->setupUi(this);
     QDir d;
     currentdir=d.currentPath()+QString("/debug/dops");
+    dada.baza.resize(0);
+    obbase=&(dada.baza);
+    zeroobinf=dada.zerobase;
+    //curbsize=0;
     loadobinfo();
-    newobj();
+    newob=(struct obinf *)malloc(1*sizeof(struct obinf));
+    //newobj();
     connect(ui->createbase,&QPushButton::clicked,this,&MainWindow::createDok);
     connect(ui->finish,&QPushButton::clicked,this,&MainWindow::finnewob);
     connect(ui->pushButton,&QPushButton::clicked,this,&MainWindow::updateob);
     connect(ui->adddata,&QPushButton::clicked,this,&MainWindow::addobgect);
 }
-
+//Загрузка информации об уже созданных типах
 void MainWindow::loadobinfo()
 {
     QString n=currentdir+QString("/ob.txt");
     QFile f(n);
+
     obinf*cur=(struct obinf*)malloc(1*sizeof(struct obinf));
-    obbase=(struct obinf*)malloc(1*sizeof(struct obinf));
-    char*buf1=(char*)malloc(5*sizeof(char));
+    char*buf1;
+    buf1=(char*)malloc(5*sizeof(char));
     strcpy(buf1,"char\0");
-    obbase->name=buf1;
-    obbase->parts=zeropart;
-    obbase->size=sizeof(char*);
-    obbase->next=cur;
+    cur->name=buf1;
+    cur->size=sizeof(char*);
+    obbase->push_back(cur);
+
     buf1=(char*)malloc(4*sizeof(char*));
     strcpy(buf1,"int\0");
+    cur=(struct obinf*)malloc(1*sizeof(struct obinf));
     cur->name=buf1;
-    cur->parts=zeropart;
     cur->size=sizeof(int);
-    cur->next=zeroobinf;
+    obbase->push_back(cur);
     /*cur->next=(struct obinf*)malloc(1*sizeof(struct obinf));
     cur=cur->next;
     buf1=(char*)malloc(6*sizeof(char));
@@ -89,13 +97,10 @@ void MainWindow::loadobinfo()
                     if(buf[k]==' ')break;
                 }
                 buf[k]='\0';
-                cur->next=(struct obinf*)malloc(1*sizeof(struct obinf));
-                cur=cur->next;
-                cur->next=zeroobinf;
-                cur->parts=zeropart;
+                cur=(struct obinf*)malloc(1*sizeof(struct obinf));
                 cur->name=(char*)malloc((k-4)*sizeof(char));
+                obbase->push_back(cur);
                 strcpy(cur->name,(buf+5));
-
             }
 
             i=cc.section(" ",1,1);
@@ -106,38 +111,40 @@ void MainWindow::loadobinfo()
             }
             if(cc==QString("consist"))
             {
-                part*curp=(struct part*)malloc(1*sizeof(struct part));
-                cur->parts=curp;
-                curp->size=0;
+                //part*curp=(struct part*)malloc(1*sizeof(struct part));
+                vector<part>*curp=&(cur->parts);
+                part pp;
+                //curp->size=0;
                 while(f.readLine(buf,128))
                 {
                     if(buf[0]!=' ')break;
-                    if(curp->size)
+                    /*if(curp->size)
                     {
                         curp->next=(struct part*)malloc(1*sizeof(struct part));
                         curp=curp->next;
                     }
-                    curp->next=zeropart;
+                    curp->next=zeropart;*/
+
                     bb=QString(buf);
                     cc=bb.section("\r",0,0);
                     aa=cc.section("|",2,2);
-                    curp->size=aa.toInt(&ok,10);
-                    if(curp->size==0)exit(44);//----------------------------------------44
+                    pp.size=aa.toInt(&ok,10);
+                    if(pp.size==0)exit(44);//----------------------------------------44
 
                     bb=cc.section(" ",1,1);
                     aa=bb.section("|",0,0);
-                    curp->tipe=makechar(aa);
+                    pp.tipe=makechar(aa);
                     aa=bb.section("|",1,1);
-                    curp->name=makechar(aa);
-
+                    pp.name=makechar(aa);
+                    curp->push_back(pp);
                 }
             }
         }
         f.close();
-        dada.baza=obbase;
-        dada.zerobase=zeroobinf;
-        dada.zeroob=zerodata;
-        dada.zeropart=zeropart;
+        //dada.baza=obbase;
+        //dada.zerobase=zeroobinf;
+        //dada.zeroob=zerodata;
+        //dada.zeropart=zeropart;
     }
     else
     {
@@ -146,14 +153,16 @@ void MainWindow::loadobinfo()
 
 }
 
+/*
+//подготовка для создания нового типа структур (выполняется всегда);
 void MainWindow::newobj()
 {
-    newob=(struct obinf *)malloc(1*sizeof(struct obinf));
-    //newob->parts=(struct part *)malloc(1*sizeof(struct part));
-    curpart=zeropart;
-    newob->next=zeroobinf;
-}
 
+    //newob->parts=(struct part *)malloc(1*sizeof(struct part));
+    //curpart=zeropart;
+    //newob->next=zeroobinf;
+}*/
+//делает из КуСтринг обячную строку.
 char* MainWindow::makechar(QString text)
 {
     int n=text.size();
@@ -170,17 +179,21 @@ char* MainWindow::makechar(QString text)
     return res;
 }
 
+//определяет размер создаваемого типа структуры
 void MainWindow::givesize()
 {
     int s=0;
-    part*uk;
-    for(uk=newob->parts;uk!=zeropart;uk=uk->next)
+    int j;
+    vector<part>uk=newob->parts;
+    part pp;
+    for(j=0;j<uk.size();j++)
     {
-        s+=uk->size;
+        pp=uk[j];
+        s+=pp.size;
     }
     newob->size=s;
 }
-
+//реакция на кнопку "Добавить Объект". Не доработано. Могут быть баги!
 void MainWindow::finnewob()
 {
     newob->name=makechar(ui->newob->text());
@@ -204,22 +217,24 @@ void MainWindow::finnewob()
         f.write(stend,2);
         char cons[]="consist\r\n";
         f.write(cons,9);
-        part*cup=newob->parts;
+        vector<part> pp=newob->parts;
+        part cup;
+        int ii;
         char i='|';
         char p=' ';
-        while(cup!=zeropart)
+        for(ii=0;ii<pp.size();ii++)
         {
+            cup=pp[ii];
             f.write(&p,1);
-            f.write(cup->tipe,strlen(cup->tipe));
+            f.write(cup.tipe,strlen(cup.tipe));
             f.write(&i,1);
-            f.write(cup->name,strlen(cup->name));
+            f.write(cup.name,strlen(cup.name));
             f.write(&i,1);
-            intt=dada.toChar(cup->size);
+            intt=dada.toChar(cup.size);
             f.write(intt,strlen(intt));
             free(intt);
             f.write(stend,2);
-            cup=cup->next;
-
+            //cup=cup->next;
         }
         f.write(stend,2);
 
@@ -229,11 +244,13 @@ void MainWindow::finnewob()
         exit(111);
     }
     f.close();
-    obinf*cur=lastobinf();
-    cur->next=newob;
-    newobj();
+    //obinf*cur=lastobinf();
+    obbase->push_back(newob);
+    newob=(struct obinf *)malloc(1*sizeof(struct obinf));
+    //newobj();
 }
-
+/*
+//находит хвост цепочки структур обинф.
 obinf* MainWindow::lastobinf()
 {
     obinf*tata;
@@ -242,11 +259,11 @@ obinf* MainWindow::lastobinf()
 
     }
     return tata;
-}
-
+}*/
+//реакция на кнопку "добавить подобъект"
 void MainWindow::updateob()
 {
-    if(curpart==zeropart)
+    /*if(curpart==zeropart)
     {
         newob->parts=(struct part *)malloc(1*sizeof(struct part));
         curpart=newob->parts;
@@ -255,18 +272,23 @@ void MainWindow::updateob()
     {
         curpart->next=(struct part *)malloc(1*sizeof(struct part));
         curpart=curpart->next;
-    }
-    curpart->next=zeropart;
-    curpart->tipe=makechar(ui->newobtipe->text());
-    curpart->name=makechar(ui->newobname->text());
-    curpart->size=sizeofob(curpart->tipe);
+    }*/
+    part pp;
+    //curpart->next=zeropart;
+    pp.tipe=makechar(ui->newobtipe->text());
+    pp.name=makechar(ui->newobname->text());
+    pp.size=sizeofob(pp.tipe);
+    newob->parts.push_back(pp);
 }
-
+//определяет размер типа по его имени
 int MainWindow::sizeofob(char*name)
 {
-    obinf*cu=obbase;
-    for(;cu!=zeroobinf;cu=cu->next)
+    int i;
+    vector<obinf*> zu=*(obbase);
+    obinf*cu;
+    for(i=0;i<zu.size();i++)
     {
+        cu=zu[i];
         if(QString(name)==QString(cu->name))
         {
             return cu->size;
@@ -276,6 +298,7 @@ int MainWindow::sizeofob(char*name)
     return 0;
 }
 //-----------------------------------------------------------PART2!!!!!!!!!!!!!!!
+//записывает имя и тип новой базы. с которой будет вестись работа
 void MainWindow::createDok()
 {
     //QString n = currentdir+QString("/")+ui->nbplase->text()+QString(".txt");
@@ -289,52 +312,57 @@ void MainWindow::createDok()
     ui->Curbase->setText(*st1);
     ui->Curbasetipe->setText(*st2);
 
-    nwba=zerodata;
+    nwba=0;
+    curbast.resize(0);
 }
 
-
-
+//добавить в базу элемент
 void MainWindow::addobgect()
 {
-    if(nwba==zerodata)
+    void*n;
+    /*if(nwba==0)
     {
-        curbast=(struct ob*)malloc(sizeof(struct ob));
+
         nwba=curbast;
     }
     else
     {
         nwba->next=(struct ob*)malloc(sizeof(struct ob));
         nwba=nwba->next;        
-    }
-    nwba->next=zerodata;
-    nwba->data=malloc(cot->size);
+    }*/
+    //nwba->next=zerodata;
+    n=malloc(cot->size);
+    curbast.push_back(n);
     reading= QString(ui->data->toPlainText());
     cursor=0;
     cursor2=0;
-    putdata(cot->parts,nwba->data);
-    tester();
+    putdata(0,cot,n);
+    //tester();
     //save();
-    //connect(ui->savenew,&QPushButton::clicked,this,&MainWindow::save);
+    connect(ui->savenew,&QPushButton::clicked,this,&MainWindow::save);
 }
-
-void MainWindow::putdata(part *wp, void *data)
+//рекурсивная функция записи данных
+void MainWindow::putdata(int n,obinf*inf, void *data)
 {
-    char a[]="int";
-    char b[]="char";
-    bool ok;
-    //void*d;
-    char *u;
-    obinf*nana;
-    QString s;
-    QString c=QString("\n");
-    //int*i;
-    int prov;
-    char *provc;
-    //QPlainTextEdit
-    if(wp!=zeropart)
+    vector<part> urur=inf->parts;
+    if(n<urur.size())
     {
+        char a[]="int";
+        char b[]="char";
+        bool ok;
+        //void*d;
+        char *u;
+        part pp=urur[n];
+        //vector<part> pp=inf->parts;
+        obinf*nana;
+        QString s;
+        QString c=QString("\n");
+        //int*i;
+        int prov;
+        char *provc;
+        //QPlainTextEdit
         s=reading.section(c,cursor,cursor);
-        if(0==strcmp(a,wp->tipe))
+        if(0==strcmp(a,pp.tipe))
         {
             *((int*)(data+cursor2))=s.toInt(&ok,10);
 
@@ -344,7 +372,7 @@ void MainWindow::putdata(part *wp, void *data)
         }
         else
         {
-            if(0==strcmp(b,wp->tipe))
+            if(0==strcmp(b,pp.tipe))
             {
                 u=(makechar(s));
                 *((char**)(data+cursor2))=u;
@@ -354,40 +382,40 @@ void MainWindow::putdata(part *wp, void *data)
             }
             else
             {
-                nana=dada.fo(wp->tipe);
+                nana=dada.fo(pp.tipe);
                 if(nana!=zeroobinf)
                 {
-                    if(nana->parts!=zeropart) putdata(nana->parts,data);
+                    putdata(0,nana,data);
 
                 }
                 //d=data+nana->size;
             }
         }
-        putdata(wp->next,data);
+        putdata(n+1,inf,data);
     }
 }
-
+//реакция на кнопку "сохранить"
 void MainWindow::save()
 {
     QString c=currentdir+QString("/")+ui->nbplase->text()+QString(".txt");
     dada.pinf(c,curbast,cot);
 }
-
+//тестер
 void MainWindow::tester()
 {
-    ob*pi=curbast;
+    int k;
     void*data;
     int i;
     //zi=0;
     char*j;
-    while(pi!=zerodata)
+    for(k=0;k<curbast.size();)
     {
-        data=pi->data;
+        data=curbast[k];
         i=*((int*)data);
         //data+=sizeof(int*);
 
-        j=((char*)(data+sizeof(int)));
-        pi=pi->next;
+        j=*((char**)(data+sizeof(int)));
+        k++;
     }
 }
 

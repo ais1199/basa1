@@ -3,8 +3,8 @@
 
 #include <QMainWindow>
 #include "sample.h"
-
-
+//#include <vector>
+//using namespace std;
 
 
 
@@ -32,12 +32,13 @@ public:
     Sample dada;
     void addobgect();
     int ctsize;
-    ob*curbast;
-    ob*nwba;
-    ob*zerodata;
+    int curbsize;
+    vector<void*>curbast;
+    int nwba;
+    //ob*zerodata;
     obinf*fo(char*);
     obinf*cot;
-    void putdata(part*,void*);
+    void putdata(int,obinf*,void*);
     QString reading;
     int cursor;
     int cursor2;
@@ -47,9 +48,9 @@ public:
     void save();
     char* makechar(QString);
     obinf *newob;
-    obinf *obbase;
+    vector<obinf*> *obbase;
     obinf *zeroobinf;
-    obinf *lastobinf();
+    //obinf *lastobinf();
     part*zeropart;
     part *curpart;
     QString currentdir;

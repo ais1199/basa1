@@ -3,6 +3,8 @@
 
 #include <QString>
 #include <QFile>
+#include <vector>
+using namespace std;
 //int square(int x);
 
 struct ob
@@ -16,30 +18,31 @@ struct part
     char*tipe;
     char*name;
     int size;
-    part*next;
+    //part*next;
 };
 
 struct obinf
 {
     char * name;
     int size;
-    part*parts;
-    obinf*next;
+    vector<part> parts;
 };
 
 class Sample
 {
 public:
     Sample();
-    void pinf(QString,ob*,obinf*);
-    void pinfrec(part*);
+    void pinf(QString,vector<void*>,obinf*);
+    void pinfrec(int,obinf*);
     char* toChar(int);
     obinf* fo(char*);
-    obinf* baza;
+    vector<obinf*> baza;
+    //obinf*curobinf;
     obinf* zerobase;
+    int place;
     void*whattoput;
-    ob*zeroob;
-    part*zeropart;
+    //ob*zeroob;
+    //part*zeropart;
     int pointer;
     QFile*f;
 };
