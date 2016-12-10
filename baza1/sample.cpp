@@ -1,5 +1,5 @@
 #include "sample.h"
-//#include <QFile>
+
 
 
 Sample::Sample()
@@ -32,6 +32,11 @@ obinf* Sample::fo(char *name)
 {
     obinf*s;
     int i;
+    for(i=0;name[i]!='\r';i++)
+    {
+        if(name[i]=='\n'||name[i]=='\0')break;
+    }
+    name[i]='\0';
     for(i=0;i<baza.size();i++)
     {
         s=baza[i];
@@ -44,18 +49,19 @@ void Sample::pinf(QString fname,vector<void*> what,obinf*inf)
 {
     f=new QFile(fname);
     int j=0;
+    int s=what.size();
     char e[]="\r\n";
     if(f->open(QIODevice::WriteOnly))
     {
         f->write(inf->name,strlen(inf->name));
         f->write(e,2);
-        for(;j<what.size();j++)
+        for(;j<s;j++)
         {
             whattoput=what[j];
             place=0;
             pinfrec(0,inf);
         }
-
+        //f->write(e,2);
     }
     else
     {
@@ -102,4 +108,77 @@ void Sample::pinfrec(int n,obinf*curobinf)
                 }
                 pinfrec(n+1,curobinf);
             }
+}
+
+void Sample::loading(QString fname,vector<void*>*toinput)
+{
+    f=new QFile(fname);
+    char buf[128];
+    obinf*tipe;
+    //int j=0;
+    if(f->open(QIODevice::ReadOnly))
+    {
+        f->readLine(buf,128);
+        tipe=fo(buf);
+
+        while(!f->atEnd())
+        {
+            whattoput=malloc(tipe->size);
+            place=0;
+            getdata(0,tipe);
+            toinput->push_back(whattoput);
+        }
+    }
+
+}
+
+void Sample::getdata(int n,obinf*inf)
+{
+    vector<part> urur=inf->parts;
+    if(n<urur.size())
+    {
+        char a[]="int";
+        char b[]="char";
+        char buf[128];
+        bool kon,ok;
+        char *u,*provc;
+        part pp=urur[n];
+        obinf*nana;
+        QString aa,bb;
+        int j;
+        if(0==strcmp(a,pp.tipe)*strcmp(b,pp.tipe))
+        {
+            f->readLine(buf,128);
+            if(buf[0]!='\r')
+            {
+                if(0==strcmp(a,pp.tipe))
+                {
+                    aa=QString(buf);
+                    bb=aa.section('\r',0,0);
+                    *((int*)(whattoput+place))=bb.toInt(&ok,10);
+                    j=*((int*)(whattoput+place));
+                    place+=sizeof(int);
+                }
+                else
+                {
+                    for(j=0;buf[j]!='\r';j++)
+                    {
+                        if(buf[j]=='\0'||buf[j]=='\n')break;
+                    }
+                    buf[j]='\0';
+                    u=(char*)malloc((j+1)*sizeof(char));
+                    strcpy(u,buf);
+                    *((char**)(whattoput+place))=u;
+                    provc=*((char**)(whattoput+place));
+                    place+=sizeof(char*);
+                }
+            }
+        }
+        else
+        {
+            nana=fo(pp.tipe);
+            if(nana!=zerobase)getdata(0,nana);
+        }
+        getdata(n+1,inf);
+    }
 }

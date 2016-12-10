@@ -37,12 +37,12 @@ public:
     char* toChar(int);
     obinf* fo(char*);
     vector<obinf*> baza;
-    //obinf*curobinf;
     obinf* zerobase;
     int place;
     void*whattoput;
-    //ob*zeroob;
-    //part*zeropart;
+    void loading(QString,vector<void*>*);
+    void getdata(int,obinf*);
+
     int pointer;
     QFile*f;
 };

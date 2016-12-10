@@ -23,7 +23,6 @@ public:
     void loadobinfo();
     void givesize();
     int sizeofob(char*);
-    char*toChar(int);
 
     void createDok();
 
@@ -36,7 +35,7 @@ public:
     vector<void*>curbast;
     int nwba;
     //ob*zerodata;
-    obinf*fo(char*);
+    //obinf*fo(char*);
     obinf*cot;
     void putdata(int,obinf*,void*);
     QString reading;
@@ -46,6 +45,7 @@ public:
     //void set_int(void *base, int sizes[], int field_index, int value);
 
     void save();
+    void load();
     char* makechar(QString);
     obinf *newob;
     vector<obinf*> *obbase;

@@ -33,6 +33,7 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(ui->finish,&QPushButton::clicked,this,&MainWindow::finnewob);
     connect(ui->pushButton,&QPushButton::clicked,this,&MainWindow::updateob);
     connect(ui->adddata,&QPushButton::clicked,this,&MainWindow::addobgect);
+    connect(ui->loadbase,&QPushButton::clicked,this,&MainWindow::load);
 }
 //Загрузка информации об уже созданных типах
 void MainWindow::loadobinfo()
@@ -244,37 +245,14 @@ void MainWindow::finnewob()
         exit(111);
     }
     f.close();
-    //obinf*cur=lastobinf();
     obbase->push_back(newob);
     newob=(struct obinf *)malloc(1*sizeof(struct obinf));
-    //newobj();
 }
-/*
-//находит хвост цепочки структур обинф.
-obinf* MainWindow::lastobinf()
-{
-    obinf*tata;
-    for(tata=obbase;tata->next!=zeroobinf;tata=tata->next)
-    {
 
-    }
-    return tata;
-}*/
 //реакция на кнопку "добавить подобъект"
 void MainWindow::updateob()
 {
-    /*if(curpart==zeropart)
-    {
-        newob->parts=(struct part *)malloc(1*sizeof(struct part));
-        curpart=newob->parts;
-    }
-    else
-    {
-        curpart->next=(struct part *)malloc(1*sizeof(struct part));
-        curpart=curpart->next;
-    }*/
     part pp;
-    //curpart->next=zeropart;
     pp.tipe=makechar(ui->newobtipe->text());
     pp.name=makechar(ui->newobname->text());
     pp.size=sizeofob(pp.tipe);
@@ -301,10 +279,7 @@ int MainWindow::sizeofob(char*name)
 //записывает имя и тип новой базы. с которой будет вестись работа
 void MainWindow::createDok()
 {
-    //QString n = currentdir+QString("/")+ui->nbplase->text()+QString(".txt");
-    //QFile f(n);
     char*ii=makechar(ui->nbtipe->text());
-    char r[]="\r\n";
     cot=dada.fo(ii);
     if(cot==zeroobinf)exit(252);
     QString*st1= new QString(ui->nbplase->text());
@@ -320,17 +295,6 @@ void MainWindow::createDok()
 void MainWindow::addobgect()
 {
     void*n;
-    /*if(nwba==0)
-    {
-
-        nwba=curbast;
-    }
-    else
-    {
-        nwba->next=(struct ob*)malloc(sizeof(struct ob));
-        nwba=nwba->next;        
-    }*/
-    //nwba->next=zerodata;
     n=malloc(cot->size);
     curbast.push_back(n);
     reading= QString(ui->data->toPlainText());
@@ -397,7 +361,7 @@ void MainWindow::putdata(int n,obinf*inf, void *data)
 //реакция на кнопку "сохранить"
 void MainWindow::save()
 {
-    QString c=currentdir+QString("/")+ui->nbplase->text()+QString(".txt");
+    QString c=currentdir+QString("/")+ui->Curbase->text()+QString(".txt");
     dada.pinf(c,curbast,cot);
 }
 //тестер
@@ -419,42 +383,32 @@ void MainWindow::tester()
     }
 }
 
-/**
- * @brief get_int достаёт int из записи в БД
- * @param base указатель на начало записи
- * @param sizes массив размеров полей записи
- * @param field_index индекс нужного поля в БД
- * @return числовое значение нужного поля
- */
-/*
-int get_int(void *base, int sizes[], int field_index)
+void MainWindow::load()
 {
-    int offset = 0;
-    for(int i = 0; i < field_index - 1; ++i) {
-        offset += sizes[i];
+    QString*st1= new QString(ui->nbplase->text());
+    QString c=currentdir+QString("/")+*st1+QString(".txt");
+    QFile f(c);
+    char buf[128];
+    if(f.open(QIODevice::ReadOnly))
+    {
+        f.readLine(buf,128);
+        f.close();
+        if(dada.fo(buf)!=zeroobinf)
+        {
+            QString*st2= new QString(buf);
+            ui->Curbase->setText(*st1);
+            ui->Curbasetipe->setText(*st2);
+            curbast.resize(0);
+            dada.loading(c,&curbast);
+            connect(ui->savenew,&QPushButton::clicked,this,&MainWindow::save);
+            tester();
+        }
     }
-    return *((int*)(base + offset));
-}
-
-void set_int(void *base, int sizes[], int field_index, int value)
-{
-    int offset = 0;
-    for(int i = 0; i < field_index - 1; ++i) {
-        offset += sizes[i];
+    else
+    {
+        exit(678);
     }
-    *((int*)(base + offset)) = value;
 }
-
-char * get_str(void *base, int sizes[], int field_index)
-{
-    int offset = 0;
-    for(int i = 0; i < field_index - 1; ++i) {
-        offset += sizes[i];
-    }
-    return (base + offset);
-}
-*/
-
 
 MainWindow::~MainWindow()
 {

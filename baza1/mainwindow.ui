@@ -202,7 +202,7 @@
       </rect>
      </property>
     </widget>
-    <widget class="QPushButton" name="pushButton_2">
+    <widget class="QPushButton" name="loadbase">
      <property name="geometry">
       <rect>
        <x>10</x>
