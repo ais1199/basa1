@@ -109,7 +109,7 @@ void Sample::pinfrec(int n,obinf*curobinf)
                 pinfrec(n+1,curobinf);
             }
 }
-
+//подготовка для загрузки базы
 void Sample::loading(QString fname,vector<void*>*toinput)
 {
     f=new QFile(fname);
@@ -131,7 +131,7 @@ void Sample::loading(QString fname,vector<void*>*toinput)
     }
 
 }
-
+//рекурсивная функция загрузки объекта
 void Sample::getdata(int n,obinf*inf)
 {
     vector<part> urur=inf->parts;

@@ -20,7 +20,7 @@
       <x>0</x>
       <y>0</y>
       <width>311</width>
-      <height>121</height>
+      <height>221</height>
      </rect>
     </property>
     <property name="frameShape">
@@ -93,7 +93,7 @@
       <rect>
        <x>10</x>
        <y>70</y>
-       <width>151</width>
+       <width>161</width>
        <height>23</height>
       </rect>
      </property>
@@ -114,7 +114,7 @@
     <widget class="QLabel" name="label_3">
      <property name="geometry">
       <rect>
-       <x>190</x>
+       <x>180</x>
        <y>10</y>
        <width>121</width>
        <height>16</height>
@@ -124,12 +124,48 @@
       <string>Имя Объекта</string>
      </property>
     </widget>
+    <widget class="QPushButton" name="pushButton_2">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>100</y>
+       <width>161</width>
+       <height>23</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Очистить список</string>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="pushButton_3">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>130</y>
+       <width>161</width>
+       <height>23</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Убрать подобъект по имени</string>
+     </property>
+    </widget>
+    <widget class="QPlainTextEdit" name="plainTextEdit_2">
+     <property name="geometry">
+      <rect>
+       <x>180</x>
+       <y>100</y>
+       <width>104</width>
+       <height>111</height>
+      </rect>
+     </property>
+    </widget>
    </widget>
    <widget class="QFrame" name="frame_2">
     <property name="geometry">
      <rect>
       <x>0</x>
-      <y>120</y>
+      <y>220</y>
       <width>311</width>
       <height>81</height>
      </rect>
@@ -220,9 +256,9 @@
     <property name="geometry">
      <rect>
       <x>0</x>
-      <y>200</y>
+      <y>300</y>
       <width>311</width>
-      <height>341</height>
+      <height>201</height>
      </rect>
     </property>
     <property name="frameShape">
@@ -286,8 +322,8 @@
     <widget class="QPushButton" name="adddata">
      <property name="geometry">
       <rect>
-       <x>160</x>
-       <y>300</y>
+       <x>20</x>
+       <y>170</y>
        <width>131</width>
        <height>23</height>
       </rect>
@@ -301,8 +337,8 @@
       <rect>
        <x>20</x>
        <y>60</y>
-       <width>271</width>
-       <height>241</height>
+       <width>131</width>
+       <height>101</height>
       </rect>
      </property>
      <property name="plainText">
@@ -312,14 +348,210 @@
     <widget class="QPushButton" name="savenew">
      <property name="geometry">
       <rect>
-       <x>20</x>
-       <y>300</y>
-       <width>111</width>
+       <x>170</x>
+       <y>170</y>
+       <width>121</width>
        <height>23</height>
       </rect>
      </property>
      <property name="text">
       <string>Сохранить</string>
+     </property>
+    </widget>
+    <widget class="QListWidget" name="example">
+     <property name="geometry">
+      <rect>
+       <x>170</x>
+       <y>60</y>
+       <width>121</width>
+       <height>101</height>
+      </rect>
+     </property>
+     <item>
+      <property name="text">
+       <string>name one</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>tuturu</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>example</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>hhhhhhh</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>kosncentration</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>loooooooool</string>
+      </property>
+     </item>
+    </widget>
+   </widget>
+   <widget class="QFrame" name="frame_4">
+    <property name="geometry">
+     <rect>
+      <x>0</x>
+      <y>500</y>
+      <width>311</width>
+      <height>41</height>
+     </rect>
+    </property>
+    <property name="frameShape">
+     <enum>QFrame::WinPanel</enum>
+    </property>
+    <property name="frameShadow">
+     <enum>QFrame::Raised</enum>
+    </property>
+    <widget class="QLabel" name="label_8">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>10</y>
+       <width>47</width>
+       <height>13</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Статус:</string>
+     </property>
+    </widget>
+    <widget class="QLabel" name="status">
+     <property name="geometry">
+      <rect>
+       <x>60</x>
+       <y>6</y>
+       <width>231</width>
+       <height>20</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>нет ошибок</string>
+     </property>
+    </widget>
+   </widget>
+   <widget class="QFrame" name="frame_5">
+    <property name="geometry">
+     <rect>
+      <x>310</x>
+      <y>0</y>
+      <width>241</width>
+      <height>541</height>
+     </rect>
+    </property>
+    <property name="frameShape">
+     <enum>QFrame::WinPanel</enum>
+    </property>
+    <property name="frameShadow">
+     <enum>QFrame::Raised</enum>
+    </property>
+    <widget class="QPlainTextEdit" name="datalist">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>100</y>
+       <width>221</width>
+       <height>131</height>
+      </rect>
+     </property>
+    </widget>
+    <widget class="QLabel" name="label_9">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>10</y>
+       <width>71</width>
+       <height>16</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Содержание</string>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="prev">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>30</y>
+       <width>81</width>
+       <height>23</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>предыдущий</string>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="next">
+     <property name="geometry">
+      <rect>
+       <x>100</x>
+       <y>30</y>
+       <width>75</width>
+       <height>23</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>следующий</string>
+     </property>
+    </widget>
+    <widget class="QLineEdit" name="place">
+     <property name="geometry">
+      <rect>
+       <x>180</x>
+       <y>30</y>
+       <width>51</width>
+       <height>20</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>0</string>
+     </property>
+    </widget>
+    <widget class="QLabel" name="total">
+     <property name="geometry">
+      <rect>
+       <x>180</x>
+       <y>10</y>
+       <width>47</width>
+       <height>13</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>0</string>
+     </property>
+    </widget>
+    <widget class="QLabel" name="label_11">
+     <property name="geometry">
+      <rect>
+       <x>120</x>
+       <y>10</y>
+       <width>47</width>
+       <height>13</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>всего:</string>
+     </property>
+    </widget>
+    <widget class="QSpinBox" name="spinBox">
+     <property name="geometry">
+      <rect>
+       <x>150</x>
+       <y>60</y>
+       <width>42</width>
+       <height>22</height>
+      </rect>
      </property>
     </widget>
    </widget>

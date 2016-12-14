@@ -10,7 +10,8 @@
 #include <QPushButton>
 #include <QLabel>
 #include <QPlainTextEdit>
-
+#include <QListWidget>
+#include <QSpinBox>
 //---------------------------------------------Remaid in vectors
 //SIZES IS FAILING!!!
 
@@ -25,10 +26,8 @@ MainWindow::MainWindow(QWidget *parent) :
     dada.baza.resize(0);
     obbase=&(dada.baza);
     zeroobinf=dada.zerobase;
-    //curbsize=0;
     loadobinfo();
     newob=(struct obinf *)malloc(1*sizeof(struct obinf));
-    //newobj();
     connect(ui->createbase,&QPushButton::clicked,this,&MainWindow::createDok);
     connect(ui->finish,&QPushButton::clicked,this,&MainWindow::finnewob);
     connect(ui->pushButton,&QPushButton::clicked,this,&MainWindow::updateob);
@@ -142,10 +141,6 @@ void MainWindow::loadobinfo()
             }
         }
         f.close();
-        //dada.baza=obbase;
-        //dada.zerobase=zeroobinf;
-        //dada.zeroob=zerodata;
-        //dada.zeropart=zeropart;
     }
     else
     {
@@ -154,15 +149,6 @@ void MainWindow::loadobinfo()
 
 }
 
-/*
-//подготовка для создания нового типа структур (выполняется всегда);
-void MainWindow::newobj()
-{
-
-    //newob->parts=(struct part *)malloc(1*sizeof(struct part));
-    //curpart=zeropart;
-    //newob->next=zeroobinf;
-}*/
 //делает из КуСтринг обячную строку.
 char* MainWindow::makechar(QString text)
 {
@@ -187,7 +173,8 @@ void MainWindow::givesize()
     int j;
     vector<part>uk=newob->parts;
     part pp;
-    for(j=0;j<uk.size();j++)
+    int dop=uk.size();
+    for(j=0;j<dop;j++)
     {
         pp=uk[j];
         s+=pp.size;
@@ -203,60 +190,96 @@ void MainWindow::finnewob()
     QString n=currentdir+QString("/ob.txt");
     QFile f(n);
     char*intt;
-    if(f.open(QIODevice::Append))
+    if(zeroobinf!=dada.fo(newob->name))
     {
-        char buff[]="name \0";
-        char stend[]="\r\n";
-        f.write(buff,strlen(buff));
-        f.write(newob->name,strlen(newob->name));
-        f.write(stend,2);
-        char buf2[]="size \0";
-        f.write(buf2,5);
-        intt=dada.toChar(newob->size);
-        f.write(intt,strlen(intt));
-        free(intt);
-        f.write(stend,2);
-        char cons[]="consist\r\n";
-        f.write(cons,9);
-        vector<part> pp=newob->parts;
-        part cup;
-        int ii;
-        char i='|';
-        char p=' ';
-        for(ii=0;ii<pp.size();ii++)
+        ui->status->setText(QString("такой объект уже есть в списке"));
+    }
+    else
+    {
+        if(f.open(QIODevice::Append))
         {
-            cup=pp[ii];
-            f.write(&p,1);
-            f.write(cup.tipe,strlen(cup.tipe));
-            f.write(&i,1);
-            f.write(cup.name,strlen(cup.name));
-            f.write(&i,1);
-            intt=dada.toChar(cup.size);
+            char buff[]="name \0";
+            char stend[]="\r\n";
+            f.write(buff,strlen(buff));
+            f.write(newob->name,strlen(newob->name));
+            f.write(stend,2);
+            char buf2[]="size \0";
+            f.write(buf2,5);
+            intt=dada.toChar(newob->size);
             f.write(intt,strlen(intt));
             free(intt);
             f.write(stend,2);
-            //cup=cup->next;
+            char cons[]="consist\r\n";
+            f.write(cons,9);
+            vector<part> pp=newob->parts;
+            part cup;
+            int ii;
+            char i='|';
+            char p=' ';
+            int dop=pp.size();
+            for(ii=0;ii<dop;ii++)
+            {
+                cup=pp[ii];
+                f.write(&p,1);
+                f.write(cup.tipe,strlen(cup.tipe));
+                f.write(&i,1);
+                f.write(cup.name,strlen(cup.name));
+                f.write(&i,1);
+                intt=dada.toChar(cup.size);
+                f.write(intt,strlen(intt));
+                free(intt);
+                f.write(stend,2);
+                //cup=cup->next;
+            }
+            f.write(stend,2);
+            obbase->push_back(newob);//___________________________chtnging is heare!
+            //ui->olist->addItem();
+            ui->status->setText(QString("нет ошибок"));
         }
-        f.write(stend,2);
+        else
+        {
+            ui->status->setText(QString("Не удолось обновить фаил."));
+        }
+        f.close();
+        newob=(struct obinf *)malloc(1*sizeof(struct obinf));
+    }
+
+}
+//реакция на кнопку "добавить подобъект"
+void MainWindow::updateob()//--------------------------------тут еще туча изменений
+{
+    part pp,ii;
+    vector<part> v=newob->parts;
+    pp.tipe=makechar(ui->newobtipe->text());
+    pp.name=makechar(ui->newobname->text());
+    pp.size=sizeofob(pp.tipe);
+    int i;
+    int dop=v.size();
+    for(i=0;i<dop;i++)
+    {
+        ii=v[i];
+        if(0==strcmp(ii.name,pp.name))break;
+    }
+    if(i==dop)
+    {
+        if(pp.size==0)
+        {
+           free(pp.tipe);
+           free(pp.name);
+           ui->status->setText(QString("такого объекта не существует"));
+        }
+        else
+        {
+            newob->parts.push_back(pp);
+            ui->status->setText(QString("ошибок нет"));
+            ui->newobname->setText(QString(""));
+        }
 
     }
     else
     {
-        exit(111);
+        ui->status->setText(QString("в создаваемом объекте уже есть элемент с таким именем"));
     }
-    f.close();
-    obbase->push_back(newob);
-    newob=(struct obinf *)malloc(1*sizeof(struct obinf));
-}
-
-//реакция на кнопку "добавить подобъект"
-void MainWindow::updateob()
-{
-    part pp;
-    pp.tipe=makechar(ui->newobtipe->text());
-    pp.name=makechar(ui->newobname->text());
-    pp.size=sizeofob(pp.tipe);
-    newob->parts.push_back(pp);
 }
 //определяет размер типа по его имени
 int MainWindow::sizeofob(char*name)
@@ -264,7 +287,8 @@ int MainWindow::sizeofob(char*name)
     int i;
     vector<obinf*> zu=*(obbase);
     obinf*cu;
-    for(i=0;i<zu.size();i++)
+    int dop=zu.size();
+    for(i=0;i<dop;i++)
     {
         cu=zu[i];
         if(QString(name)==QString(cu->name))
@@ -290,6 +314,21 @@ void MainWindow::createDok()
     nwba=0;
     curbast.resize(0);
 }
+/*void MainWindow::upd(bool where)
+{
+    if(where)
+    {
+        connect(ui->next,&QPushButton::clicked,this,&MainWindow::nxt1);
+        connect(ui->prev,&QPushButton::clicked,this,&MainWindow::prv1);
+        connect(ui->place,SIGNAL(QLineEdit::textChanged(const QString &)),this,&MainWindow::pa);
+    }
+}
+*/
+//подготавливает поле для записи.
+void MainWindow::tdp()
+{
+
+}
 
 //добавить в базу элемент
 void MainWindow::addobgect()
@@ -301,15 +340,15 @@ void MainWindow::addobgect()
     cursor=0;
     cursor2=0;
     putdata(0,cot,n);
-    //tester();
-    //save();
+    showdata(curbast.size()+1,true);
     connect(ui->savenew,&QPushButton::clicked,this,&MainWindow::save);
 }
 //рекурсивная функция записи данных
 void MainWindow::putdata(int n,obinf*inf, void *data)
 {
     vector<part> urur=inf->parts;
-    if(n<urur.size())
+    int dop=urur.size();
+    if(n<dop)
     {
         char a[]="int";
         char b[]="char";
@@ -321,16 +360,10 @@ void MainWindow::putdata(int n,obinf*inf, void *data)
         obinf*nana;
         QString s;
         QString c=QString("\n");
-        //int*i;
-        int prov;
-        char *provc;
-        //QPlainTextEdit
         s=reading.section(c,cursor,cursor);
         if(0==strcmp(a,pp.tipe))
         {
             *((int*)(data+cursor2))=s.toInt(&ok,10);
-
-            prov=*((int*)data);
             cursor++;
             cursor2+=sizeof(int);
         }
@@ -340,7 +373,6 @@ void MainWindow::putdata(int n,obinf*inf, void *data)
             {
                 u=(makechar(s));
                 *((char**)(data+cursor2))=u;
-                provc=*((char**)(data+cursor2));
                 cursor2+=sizeof(char*);
                 cursor++;
             }
@@ -352,7 +384,6 @@ void MainWindow::putdata(int n,obinf*inf, void *data)
                     putdata(0,nana,data);
 
                 }
-                //d=data+nana->size;
             }
         }
         putdata(n+1,inf,data);
@@ -365,6 +396,7 @@ void MainWindow::save()
     dada.pinf(c,curbast,cot);
 }
 //тестер
+/*
 void MainWindow::tester()
 {
     int k;
@@ -382,7 +414,8 @@ void MainWindow::tester()
         k++;
     }
 }
-
+*/
+//загрузить базу
 void MainWindow::load()
 {
     QString*st1= new QString(ui->nbplase->text());
@@ -400,13 +433,91 @@ void MainWindow::load()
             ui->Curbasetipe->setText(*st2);
             curbast.resize(0);
             dada.loading(c,&curbast);
+            cot=dada.fo(buf);
+
             connect(ui->savenew,&QPushButton::clicked,this,&MainWindow::save);
-            tester();
+            showdata(curbast.size()+1,true);
+            //upd(true);
+            connect(ui->spinBox,&QSpinBox::valueChanged,this,pa);
         }
     }
     else
     {
         exit(678);
+    }
+}
+//_________________________________стартовая функция для того, чтобы показать фрагмент из базы данных
+void MainWindow::showdata(int nomber,bool where)
+{
+    //vector<part> pp=cot->parts;
+    int i=nomber-1;
+    int limit;
+    if(where)
+    {
+        limit=curbast.size();
+        ui->datalist->clear();
+        if(i>=limit)i=limit-1;
+        cursor2=0;
+        cursor=0;
+        ui->spinBox->setValue(nomber);
+        ui->datalist->insertPlainText(QString("\n"));
+        pd(0,cot,curbast[i],true);
+    }
+
+}
+void MainWindow::pd(int n, obinf *inf, void *data, bool where)
+{
+    vector<part> urur=inf->parts;
+    int dop=urur.size();
+    if(n<dop)
+    {
+
+        char a[]="int";
+        char b[]="char";
+        bool ok;
+        char *u;
+        part pp=urur[n];
+        obinf*nana;
+        QString s;
+        QString c=QString("\n");
+        QString d,bb;
+        int i;
+        for(i=0;i<cursor;i++)
+        {
+            d+=QString(" ");
+        }
+        d=QString(pp.name)+QString(": ");
+        if(where)
+        {
+            ui->datalist->insertPlainText(d);
+        }
+        if(0==strcmp(a,pp.tipe))
+        {
+            i=*((int*)(data+cursor2));
+            bb=QString(dada.toChar(i))+c;
+            if(where)ui->datalist->insertPlainText(bb);
+            cursor2+=sizeof(int);
+        }
+        else
+        {
+            if(0==strcmp(b,pp.tipe))
+            {
+                u=*((char**)(data+cursor2));
+                bb=QString(u)+c;
+                if(where)ui->datalist->insertPlainText(bb);
+                cursor2+=sizeof(char*);
+            }
+            else
+            {
+                nana=dada.fo(pp.tipe);
+                if(nana!=zeroobinf)
+                {
+                    pd(0,nana,data,where);
+
+                }
+            }
+        }
+        pd(n+1,inf,data,where);
     }
 }
 

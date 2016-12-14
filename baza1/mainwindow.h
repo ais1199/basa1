@@ -44,6 +44,15 @@ public:
 
     //void set_int(void *base, int sizes[], int field_index, int value);
 
+    void tdp();
+    void showdata(int, bool);
+    void pd(int,obinf*,void*,bool);
+    void upd(bool);
+
+    void nxt1();
+    void prv1();
+    void pa();
+
     void save();
     void load();
     char* makechar(QString);
