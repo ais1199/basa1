@@ -47,11 +47,10 @@ public:
     void tdp();
     void showdata(int, bool);
     void pd(int,obinf*,void*,bool);
-    void upd(bool);
+    void upd();
 
     void nxt1();
     void prv1();
-    void pa();
 
     void save();
     void load();
@@ -66,6 +65,9 @@ public:
 
     explicit MainWindow(QWidget *parent = 0);
     ~MainWindow();
+public slots:
+    void pa(int);
+
 
 private:
     Ui::MainWindow *ui;

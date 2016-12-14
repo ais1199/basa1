@@ -28,6 +28,10 @@ MainWindow::MainWindow(QWidget *parent) :
     zeroobinf=dada.zerobase;
     loadobinfo();
     newob=(struct obinf *)malloc(1*sizeof(struct obinf));
+    ui->example->setReadOnly(true);
+    ui->datalist->setReadOnly(true);
+    ui->nplist->setReadOnly(true);
+    ui->spinBox->setMinimum(1);
     connect(ui->createbase,&QPushButton::clicked,this,&MainWindow::createDok);
     connect(ui->finish,&QPushButton::clicked,this,&MainWindow::finnewob);
     connect(ui->pushButton,&QPushButton::clicked,this,&MainWindow::updateob);
@@ -181,7 +185,7 @@ void MainWindow::givesize()
     }
     newob->size=s;
 }
-//реакция на кнопку "Добавить Объект". Не доработано. Могут быть баги!
+//реакция на кнопку "Добавить Объект"
 void MainWindow::finnewob()
 {
     newob->name=makechar(ui->newob->text());
@@ -235,6 +239,8 @@ void MainWindow::finnewob()
             obbase->push_back(newob);//___________________________chtnging is heare!
             //ui->olist->addItem();
             ui->status->setText(QString("нет ошибок"));
+            ui->nplist->clear();
+            ui->newob->clear();
         }
         else
         {
@@ -272,13 +278,30 @@ void MainWindow::updateob()//--------------------------------тут еще ту�
         {
             newob->parts.push_back(pp);
             ui->status->setText(QString("ошибок нет"));
-            ui->newobname->setText(QString(""));
+            ui->newobname->clear();
+            tdp();
         }
 
     }
     else
     {
         ui->status->setText(QString("в создаваемом объекте уже есть элемент с таким именем"));
+    }
+}
+//обновление списка того, что есть в создаваемой величине
+void MainWindow::tdp()
+{
+    int i,dop;
+    dop=newob->parts.size();
+    vector<part> pp=newob->parts;
+    ui->nplist->clear();
+    QString wtp;
+    part ogo;
+    for(i=0;i<dop;i++)
+    {
+        ogo=pp[i];
+        wtp=QString(ogo.name)+QString(" (")+QString(ogo.tipe)+QString(")\n");
+        ui->nplist->insertPlainText(wtp);
     }
 }
 //определяет размер типа по его имени
@@ -314,21 +337,13 @@ void MainWindow::createDok()
     nwba=0;
     curbast.resize(0);
 }
-/*void MainWindow::upd(bool where)
-{
-    if(where)
-    {
-        connect(ui->next,&QPushButton::clicked,this,&MainWindow::nxt1);
-        connect(ui->prev,&QPushButton::clicked,this,&MainWindow::prv1);
-        connect(ui->place,SIGNAL(QLineEdit::textChanged(const QString &)),this,&MainWindow::pa);
-    }
-}
-*/
-//подготавливает поле для записи.
-void MainWindow::tdp()
+/*
+void MainWindow::upd()
 {
 
 }
+*/
+
 
 //добавить в базу элемент
 void MainWindow::addobgect()
@@ -340,6 +355,7 @@ void MainWindow::addobgect()
     cursor=0;
     cursor2=0;
     putdata(0,cot,n);
+    ui->lim1->setText(QString(dada.toChar(curbast.size())));
     showdata(curbast.size()+1,true);
     connect(ui->savenew,&QPushButton::clicked,this,&MainWindow::save);
 }
@@ -436,9 +452,9 @@ void MainWindow::load()
             cot=dada.fo(buf);
 
             connect(ui->savenew,&QPushButton::clicked,this,&MainWindow::save);
-            showdata(curbast.size()+1,true);
-            //upd(true);
-            connect(ui->spinBox,&QSpinBox::valueChanged,this,pa);
+            showdata(curbast.size(),true);
+            ui->lim1->setText(QString(dada.toChar(curbast.size())));
+            connect(ui->spinBox,SIGNAL(valueChanged(int)),this,SLOT(pa(int)));
         }
     }
     else
@@ -446,15 +462,23 @@ void MainWindow::load()
         exit(678);
     }
 }
+//------------------------------------функция, реагирующая на изменение
+void MainWindow::pa(int point)
+{
+    showdata(point,true);
+}
+
 //_________________________________стартовая функция для того, чтобы показать фрагмент из базы данных
 void MainWindow::showdata(int nomber,bool where)
 {
     //vector<part> pp=cot->parts;
     int i=nomber-1;
     int limit;
+    if(i<0)i=0;
     if(where)
     {
         limit=curbast.size();
+        ui->spinBox->setMaximum(limit);
         ui->datalist->clear();
         if(i>=limit)i=limit-1;
         cursor2=0;
@@ -465,6 +489,7 @@ void MainWindow::showdata(int nomber,bool where)
     }
 
 }
+//----------------------------------------------------------рекурсивная функция для вывода данных
 void MainWindow::pd(int n, obinf *inf, void *data, bool where)
 {
     vector<part> urur=inf->parts;
@@ -474,7 +499,7 @@ void MainWindow::pd(int n, obinf *inf, void *data, bool where)
 
         char a[]="int";
         char b[]="char";
-        bool ok;
+        //bool ok;
         char *u;
         part pp=urur[n];
         obinf*nana;

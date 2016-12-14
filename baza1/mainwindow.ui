@@ -150,7 +150,7 @@
       <string>Убрать подобъект по имени</string>
      </property>
     </widget>
-    <widget class="QPlainTextEdit" name="plainTextEdit_2">
+    <widget class="QPlainTextEdit" name="nplist">
      <property name="geometry">
       <rect>
        <x>180</x>
@@ -358,45 +358,15 @@
       <string>Сохранить</string>
      </property>
     </widget>
-    <widget class="QListWidget" name="example">
+    <widget class="QPlainTextEdit" name="example">
      <property name="geometry">
       <rect>
-       <x>170</x>
+       <x>160</x>
        <y>60</y>
-       <width>121</width>
+       <width>141</width>
        <height>101</height>
       </rect>
      </property>
-     <item>
-      <property name="text">
-       <string>name one</string>
-      </property>
-     </item>
-     <item>
-      <property name="text">
-       <string>tuturu</string>
-      </property>
-     </item>
-     <item>
-      <property name="text">
-       <string>example</string>
-      </property>
-     </item>
-     <item>
-      <property name="text">
-       <string>hhhhhhh</string>
-      </property>
-     </item>
-     <item>
-      <property name="text">
-       <string>kosncentration</string>
-      </property>
-     </item>
-     <item>
-      <property name="text">
-       <string>loooooooool</string>
-      </property>
-     </item>
     </widget>
    </widget>
    <widget class="QFrame" name="frame_4">
@@ -460,7 +430,7 @@
      <property name="geometry">
       <rect>
        <x>10</x>
-       <y>100</y>
+       <y>40</y>
        <width>221</width>
        <height>131</height>
       </rect>
@@ -479,52 +449,23 @@
       <string>Содержание</string>
      </property>
     </widget>
-    <widget class="QPushButton" name="prev">
+    <widget class="QSpinBox" name="spinBox">
      <property name="geometry">
       <rect>
-       <x>10</x>
-       <y>30</y>
-       <width>81</width>
-       <height>23</height>
-      </rect>
-     </property>
-     <property name="text">
-      <string>предыдущий</string>
-     </property>
-    </widget>
-    <widget class="QPushButton" name="next">
-     <property name="geometry">
-      <rect>
-       <x>100</x>
-       <y>30</y>
-       <width>75</width>
-       <height>23</height>
-      </rect>
-     </property>
-     <property name="text">
-      <string>следующий</string>
-     </property>
-    </widget>
-    <widget class="QLineEdit" name="place">
-     <property name="geometry">
-      <rect>
-       <x>180</x>
-       <y>30</y>
-       <width>51</width>
-       <height>20</height>
-      </rect>
-     </property>
-     <property name="text">
-      <string>0</string>
-     </property>
-    </widget>
-    <widget class="QLabel" name="total">
-     <property name="geometry">
-      <rect>
-       <x>180</x>
+       <x>90</x>
        <y>10</y>
-       <width>47</width>
-       <height>13</height>
+       <width>42</width>
+       <height>22</height>
+      </rect>
+     </property>
+    </widget>
+    <widget class="QLabel" name="lim1">
+     <property name="geometry">
+      <rect>
+       <x>166</x>
+       <y>10</y>
+       <width>61</width>
+       <height>20</height>
       </rect>
      </property>
      <property name="text">
@@ -534,24 +475,14 @@
     <widget class="QLabel" name="label_11">
      <property name="geometry">
       <rect>
-       <x>120</x>
+       <x>140</x>
        <y>10</y>
-       <width>47</width>
-       <height>13</height>
+       <width>21</width>
+       <height>21</height>
       </rect>
      </property>
      <property name="text">
-      <string>всего:</string>
-     </property>
-    </widget>
-    <widget class="QSpinBox" name="spinBox">
-     <property name="geometry">
-      <rect>
-       <x>150</x>
-       <y>60</y>
-       <width>42</width>
-       <height>22</height>
-      </rect>
+      <string>Из</string>
      </property>
     </widget>
    </widget>
