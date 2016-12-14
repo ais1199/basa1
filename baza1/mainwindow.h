@@ -48,6 +48,8 @@ public:
     void showdata(int, bool);
     void pd(int,obinf*,void*,bool);
     void upd();
+    void fpl();
+    void fsp();
 
     void nxt1();
     void prv1();

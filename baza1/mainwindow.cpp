@@ -37,6 +37,7 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(ui->pushButton,&QPushButton::clicked,this,&MainWindow::updateob);
     connect(ui->adddata,&QPushButton::clicked,this,&MainWindow::addobgect);
     connect(ui->loadbase,&QPushButton::clicked,this,&MainWindow::load);
+    connect(ui->freelist,&QPushButton::clicked,this,&MainWindow::fpl);
 }
 //Загрузка информации об уже созданных типах
 void MainWindow::loadobinfo()
@@ -58,29 +59,6 @@ void MainWindow::loadobinfo()
     cur->name=buf1;
     cur->size=sizeof(int);
     obbase->push_back(cur);
-    /*cur->next=(struct obinf*)malloc(1*sizeof(struct obinf));
-    cur=cur->next;
-    buf1=(char*)malloc(6*sizeof(char));
-    strcpy(buf1,"obinf\0");
-    cur->name=buf1;
-    cur->size=sizeof(struct obinf);
-    cur->parts=(struct parts*)malloc(1*(sizeof(struct parts)));
-    part*p=cur->parts;
-    buf1=(char*)malloc(5*sizeof(char));
-    strcpy(buf1,"name\0");
-    p->name=buf1;
-    //buf1=(char*)malloc(5*sizeof(char));
-    //strcpy(buf1,"char\0");
-    p->tipe=obbase->name;
-    p->size=obbase->size;
-    p->next=(struct parts*)malloc(1*(sizeof(struct parts)));
-    p=p->next;
-    p->tipe=obbase->next->name;
-    p->size=obbase->next->size;
-    buf1=(char*)malloc(5*sizeof(char));
-    strcpy(buf1,"size\0");
-    p->name=buf1;
-    */
 
     if(f.open(QIODevice::ReadOnly))
     {
@@ -115,20 +93,11 @@ void MainWindow::loadobinfo()
             }
             if(cc==QString("consist"))
             {
-                //part*curp=(struct part*)malloc(1*sizeof(struct part));
                 vector<part>*curp=&(cur->parts);
                 part pp;
-                //curp->size=0;
                 while(f.readLine(buf,128))
                 {
                     if(buf[0]!=' ')break;
-                    /*if(curp->size)
-                    {
-                        curp->next=(struct part*)malloc(1*sizeof(struct part));
-                        curp=curp->next;
-                    }
-                    curp->next=zeropart;*/
-
                     bb=QString(buf);
                     cc=bb.section("\r",0,0);
                     aa=cc.section("|",2,2);
@@ -148,7 +117,7 @@ void MainWindow::loadobinfo()
     }
     else
     {
-        exit(11);//----------------------------------------------------------------------11
+        ui->status->setText("список баз пуст");
     }
 
 }
@@ -280,6 +249,7 @@ void MainWindow::updateob()//--------------------------------тут еще ту�
             ui->status->setText(QString("ошибок нет"));
             ui->newobname->clear();
             tdp();
+            connect(ui->delob,&QPushButton::clicked,this,&MainWindow::fsp);
         }
 
     }
@@ -304,6 +274,42 @@ void MainWindow::tdp()
         ui->nplist->insertPlainText(wtp);
     }
 }
+//free newobj parts list
+void MainWindow::fpl()
+{
+    newob->parts.resize(0);
+    ui->nplist->clear();
+}
+//free pointed part in newobjlist
+void MainWindow::fsp()
+{
+    int i,j,dop;
+    dop=newob->parts.size();
+    vector<part> *pp=&(newob->parts);
+    part ou;
+    char*u=makechar(ui->namembr->text());
+    for(i=0;i<dop;i++)
+    {
+        ou=(*pp)[i];
+        if(0==strcmp(u,ou.name))break;
+    }
+    if(i==dop)
+    {
+        ui->status->setText("такого подобъекта нет");
+    }
+    else
+    {
+        ui->status->setText("нет ошибок");
+        ui->namembr->clear();
+        for(j=i;j<dop-1;j++)
+        {
+            (*pp)[j]=(*pp)[j+1];
+        }
+        newob->parts.resize(dop-1);
+        tdp();
+    }
+}
+
 //определяет размер типа по его имени
 int MainWindow::sizeofob(char*name)
 {
