@@ -31,6 +31,7 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->example->setReadOnly(true);
     ui->datalist->setReadOnly(true);
     ui->nplist->setReadOnly(true);
+    ui->mainlist->setReadOnly(true);
     ui->spinBox->setMinimum(1);
     connect(ui->createbase,&QPushButton::clicked,this,&MainWindow::createDok);
     connect(ui->finish,&QPushButton::clicked,this,&MainWindow::finnewob);
@@ -38,6 +39,7 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(ui->adddata,&QPushButton::clicked,this,&MainWindow::addobgect);
     connect(ui->loadbase,&QPushButton::clicked,this,&MainWindow::load);
     connect(ui->freelist,&QPushButton::clicked,this,&MainWindow::fpl);
+    connect(ui->delob,&QPushButton::clicked,this,&MainWindow::fsp);
 }
 //Загрузка информации об уже созданных типах
 void MainWindow::loadobinfo()
@@ -120,6 +122,32 @@ void MainWindow::loadobinfo()
         ui->status->setText("список баз пуст");
     }
 
+}
+
+void MainWindow::updmlist()
+{
+    int i,j,d;
+    vector<obinf*> m=*obbase;
+    int dop=m.size();
+    vector<part> pa;
+    part pp;
+    obinf* bas;
+    ui->mainlist->clear();
+    QString wr;
+    for(i=0;i<dop;i++)
+    {
+        bas=m[i];
+        wr=QString(bas->name)+QString(":\n");
+        ui->mainlist->insertPlainText(wr);
+        pa=bas->parts;
+        d=pa.size();
+        for(j=0;j<d;j++)
+        {
+            pp=pa[j];
+            wr=QString("  ")+QString(pp.name)+QString("(")+QString(pp.tipe)+QString(")\n");
+            ui->mainlist->insertPlainText(wr);
+        }
+    }
 }
 
 //делает из КуСтринг обячную строку.
@@ -210,6 +238,7 @@ void MainWindow::finnewob()
             ui->status->setText(QString("нет ошибок"));
             ui->nplist->clear();
             ui->newob->clear();
+            updmlist();
         }
         else
         {
@@ -279,6 +308,7 @@ void MainWindow::fpl()
 {
     newob->parts.resize(0);
     ui->nplist->clear();
+    ui->status->setText("нет ошибок");
 }
 //free pointed part in newobjlist
 void MainWindow::fsp()
@@ -295,7 +325,8 @@ void MainWindow::fsp()
     }
     if(i==dop)
     {
-        ui->status->setText("такого подобъекта нет");
+        ui->status->setText("такого подобъекта нет");//почему-то выводит именно это, а в остальном воркает
+
     }
     else
     {
@@ -339,16 +370,53 @@ void MainWindow::createDok()
     QString*st2= new QString(ui->nbtipe->text());
     ui->Curbase->setText(*st1);
     ui->Curbasetipe->setText(*st2);
-
+    ui->example->clear();
+    wrex(cot);
     nwba=0;
     curbast.resize(0);
+    ui->status2->setText("нет ошибок");
 }
-/*
-void MainWindow::upd()
+//выводит подсказку для нового объекта
+void MainWindow::wrex(obinf*inf)
 {
+    vector<part> pp=inf->parts;
+    QString wr=QString(inf->name)+QString(":\n");
+    ui->example->insertPlainText(wr);
+    part pa;
+    //char*u;
+    char a[]="int";
+    char b[]="char";
+    int i;
+    obinf*nana;
+    int dop=pp.size();
+    for(i=0;i<dop;i++)
+    {
+        pa=pp[i];
+        if(0==strcmp(a,pa.tipe))
+        {
+            wr=QString(pa.name)+QString("(int)\n");
+            ui->example->insertPlainText(wr);
+        }
+        else
+        {
+            if(0==strcmp(b,pa.tipe))
+            {
+                wr=QString(pa.name)+QString("(char)\n");
+                ui->example->insertPlainText(wr);
+            }
+            else
+            {
+                nana=dada.fo(pa.tipe);
+                if(nana!=zeroobinf)
+                {
+                    wrex(nana);
 
+                }
+            }
+        }
+    }
 }
-*/
+
 
 
 //добавить в базу элемент
@@ -364,6 +432,7 @@ void MainWindow::addobgect()
     ui->lim1->setText(QString(dada.toChar(curbast.size())));
     showdata(curbast.size()+1,true);
     connect(ui->savenew,&QPushButton::clicked,this,&MainWindow::save);
+    ui->status2->setText("нет ошибок");
 }
 //рекурсивная функция записи данных
 void MainWindow::putdata(int n,obinf*inf, void *data)
@@ -416,6 +485,7 @@ void MainWindow::save()
 {
     QString c=currentdir+QString("/")+ui->Curbase->text()+QString(".txt");
     dada.pinf(c,curbast,cot);
+    ui->status2->setText("сохранено");
 }
 //тестер
 /*
@@ -461,17 +531,20 @@ void MainWindow::load()
             showdata(curbast.size(),true);
             ui->lim1->setText(QString(dada.toChar(curbast.size())));
             connect(ui->spinBox,SIGNAL(valueChanged(int)),this,SLOT(pa(int)));
+            wrex(cot);
+            ui->status2->setText("нет ошибок");
         }
     }
     else
     {
-        exit(678);
+        ui->status2->setText("ошибка загрузки");
     }
 }
 //------------------------------------функция, реагирующая на изменение
 void MainWindow::pa(int point)
 {
     showdata(point,true);
+    ui->status2->setText("нет ошибок");
 }
 
 //_________________________________стартовая функция для того, чтобы показать фрагмент из базы данных

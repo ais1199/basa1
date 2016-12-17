@@ -50,6 +50,8 @@ public:
     void upd();
     void fpl();
     void fsp();
+    void wrex(obinf*);
+    void updmlist();
 
     void nxt1();
     void prv1();
