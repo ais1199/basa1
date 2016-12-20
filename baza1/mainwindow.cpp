@@ -30,9 +30,14 @@ MainWindow::MainWindow(QWidget *parent) :
     newob=(struct obinf *)malloc(1*sizeof(struct obinf));
     ui->example->setReadOnly(true);
     ui->datalist->setReadOnly(true);
+    ui->datalist2->setReadOnly(true);
+
     ui->nplist->setReadOnly(true);
     ui->mainlist->setReadOnly(true);
     ui->spinBox->setMinimum(1);
+    ui->spinBox2->setMinimum(1);
+    dada.wasfound.resize(0);
+    rbres=true;
     connect(ui->createbase,&QPushButton::clicked,this,&MainWindow::createDok);
     connect(ui->finish,&QPushButton::clicked,this,&MainWindow::finnewob);
     connect(ui->pushButton,&QPushButton::clicked,this,&MainWindow::updateob);
@@ -40,7 +45,19 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(ui->loadbase,&QPushButton::clicked,this,&MainWindow::load);
     connect(ui->freelist,&QPushButton::clicked,this,&MainWindow::fpl);
     connect(ui->delob,&QPushButton::clicked,this,&MainWindow::fsp);
+    connect(ui->radioButton,SIGNAL(clicked(bool)),this,SLOT(radioreaction(bool)));
+    connect(ui->radioButton_2,SIGNAL(clicked(bool)),this,SLOT(radioreaction2(bool)));
+
 }
+void MainWindow::radioreaction(bool res)
+{
+    rbres=true;
+}
+void MainWindow::radioreaction2(bool res)
+{
+    rbres=false;
+}
+
 //Загрузка информации об уже созданных типах
 void MainWindow::loadobinfo()
 {
@@ -306,6 +323,16 @@ void MainWindow::tdp()
 //free newobj parts list
 void MainWindow::fpl()
 {
+    vector<part> pp=newob->parts;
+    part pa;
+    int dop=pp.size();
+    int i;
+    for(i=0;i<dop;i++)
+    {
+        pa=pp[i];
+        free(pa.name);
+        free(pa.tipe);
+    }
     newob->parts.resize(0);
     ui->nplist->clear();
     ui->status->setText("нет ошибок");
@@ -332,6 +359,9 @@ void MainWindow::fsp()
     {
         ui->status->setText("нет ошибок");
         ui->namembr->clear();
+        ou=(*pp)[i];
+        free(ou.name);
+        free(ou.tipe);
         for(j=i;j<dop-1;j++)
         {
             (*pp)[j]=(*pp)[j+1];
@@ -375,6 +405,7 @@ void MainWindow::createDok()
     nwba=0;
     curbast.resize(0);
     ui->status2->setText("нет ошибок");
+    connect(ui->serch,&QPushButton::clicked,this,&MainWindow::serch);
 }
 //выводит подсказку для нового объекта
 void MainWindow::wrex(obinf*inf)
@@ -531,6 +562,7 @@ void MainWindow::load()
             showdata(curbast.size(),true);
             ui->lim1->setText(QString(dada.toChar(curbast.size())));
             connect(ui->spinBox,SIGNAL(valueChanged(int)),this,SLOT(pa(int)));
+            connect(ui->serch,&QPushButton::clicked,this,&MainWindow::serch);
             wrex(cot);
             ui->status2->setText("нет ошибок");
         }
@@ -552,24 +584,41 @@ void MainWindow::showdata(int nomber,bool where)
 {
     //vector<part> pp=cot->parts;
     int i=nomber-1;
-    int limit;
+    int limit,j;
     if(i<0)i=0;
     if(where)
     {
         limit=curbast.size();
         ui->spinBox->setMaximum(limit);
         ui->datalist->clear();
-        if(i>=limit)i=limit-1;
+        //if(i>=limit)i=limit-1;
         cursor2=0;
         cursor=0;
         ui->spinBox->setValue(nomber);
         ui->datalist->insertPlainText(QString("\n"));
         pd(0,cot,curbast[i],true);
     }
+    else
+    {
+        if(dada.wasfound.size())
+        {
+            limit=dada.wasfound.size();
+            ui->spinBox2->setMaximum(limit);
+            ui->datalist2->clear();
+            //if(i>=limit)i=limit-1;
+            cursor2=0;
+            cursor=0;
+            //ui->spinBox2->setValue(nomber);
+            ui->datalist2->insertPlainText(QString("\n"));
+            j=(dada.wasfound)[i];
+            pd(0,cot,curbast[j],false);
+        }
+
+    }
 
 }
 //----------------------------------------------------------рекурсивная функция для вывода данных
-void MainWindow::pd(int n, obinf *inf, void *data, bool where)
+void MainWindow::pd(int n, obinf *inf, void *data,bool where)
 {
     vector<part> urur=inf->parts;
     int dop=urur.size();
@@ -595,11 +644,20 @@ void MainWindow::pd(int n, obinf *inf, void *data, bool where)
         {
             ui->datalist->insertPlainText(d);
         }
+        else
+        {
+            ui->datalist2->insertPlainText(d);
+
+        }
         if(0==strcmp(a,pp.tipe))
         {
             i=*((int*)(data+cursor2));
             bb=QString(dada.toChar(i))+c;
             if(where)ui->datalist->insertPlainText(bb);
+            else
+            {
+                ui->datalist2->insertPlainText(bb);
+            }
             cursor2+=sizeof(int);
         }
         else
@@ -609,6 +667,10 @@ void MainWindow::pd(int n, obinf *inf, void *data, bool where)
                 u=*((char**)(data+cursor2));
                 bb=QString(u)+c;
                 if(where)ui->datalist->insertPlainText(bb);
+                else
+                {
+                    ui->datalist2->insertPlainText(bb);
+                }
                 cursor2+=sizeof(char*);
             }
             else
@@ -623,6 +685,80 @@ void MainWindow::pd(int n, obinf *inf, void *data, bool where)
         }
         pd(n+1,inf,data,where);
     }
+}
+//-----------------------------------начать поиск
+void MainWindow::serch()
+{
+    char*u=makechar(ui->log->text());
+    dada.st=cot;
+    int pat=1;
+    if(rbres)
+    {
+        dada.sp=&curbast;
+        pat=dada.interpritator(u);
+    }
+    else//--------------------------------тут какая-то трабла
+    {
+        vector<int>was=dada.wasfound;
+        dada.sp=&curbast;
+        pat=dada.interpritator(u);
+        if(pat>0)
+        {
+            vector<int>now=dada.wasfound;
+            dada.wasfound.resize(0);
+            int i,j;
+            j=0;
+            int d=was.size();
+            int d2=now.size();
+            for(i=0;i<d;)
+            {
+                if(j==d2)break;
+                if(was[i]<now[j])
+                {
+                    i++;
+                }
+                else
+                {
+                    if(was[i]==now[j])
+                    {
+                        dada.wasfound.push_back(was[i]);
+                        i++;
+                    }
+
+                    j++;
+                }
+            }
+        }
+
+    }
+    if(pat>0)
+    {
+        int dop=dada.wasfound.size();
+        ui->lim2->setText(QString(dada.toChar(dop)));
+        ui->spinBox2->setMaximum(dop);
+        //showdata(dop,false);
+        connect(ui->spinBox2,SIGNAL(valueChanged(int)),this,SLOT(ha(int)));
+        ui->spinBox2->setValue(dop+1);
+    }
+    else
+    {
+        if(pat==0)
+        {
+            ui->datalist2->clear();
+            ui->lim2->setText(QString("0"));
+        }
+    }
+}
+//------------------------реакция на изменение во втором
+void MainWindow::ha(int aa)
+{
+    if(aa>0)
+    {
+        vector<int>ii=dada.wasfound;
+        int s=(ii[aa-1]);
+        showdata(s,false);
+    }
+
 }
 
 MainWindow::~MainWindow()

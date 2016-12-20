@@ -52,6 +52,7 @@ public:
     void fsp();
     void wrex(obinf*);
     void updmlist();
+    void serch();
 
     void nxt1();
     void prv1();
@@ -66,11 +67,15 @@ public:
     part*zeropart;
     part *curpart;
     QString currentdir;
+    bool rbres;
 
     explicit MainWindow(QWidget *parent = 0);
     ~MainWindow();
 public slots:
     void pa(int);
+    void ha(int);
+    void radioreaction(bool);
+    void radioreaction2(bool);
 
 
 private:

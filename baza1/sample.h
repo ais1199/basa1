@@ -43,6 +43,12 @@ public:
     void loading(QString,vector<void*>*);
     void getdata(int,obinf*);
 
+    int interpritator(char*);
+    int getint(char*,void*);
+    char* getchar(char*,void*);
+    vector<int> wasfound;
+    vector<void*>*sp;
+    obinf*st;
     int pointer;
     QFile*f;
 };
