@@ -12,8 +12,6 @@
 #include <QPlainTextEdit>
 #include <QListWidget>
 #include <QSpinBox>
-//---------------------------------------------Remaid in vectors
-//SIZES IS FAILING!!!
 
 //Запуск виджета в исходном виде.
 MainWindow::MainWindow(QWidget *parent) :
@@ -144,6 +142,7 @@ void MainWindow::loadobinfo()
             printf("done\n");
         }
         printf("file is ended\n");
+        updmlist();
     }
     else
     {
@@ -153,7 +152,7 @@ void MainWindow::loadobinfo()
     printf("eto konets\n");
 
 }
-
+//----------------------------выписывает в большое окно список того что есть
 void MainWindow::updmlist()
 {
     int i,j,d;
@@ -421,6 +420,7 @@ void MainWindow::createDok()
     connect(ui->serch,&QPushButton::clicked,this,&MainWindow::serch);
     connect(ui->del1,&QPushButton::clicked,this,&MainWindow::delone);
     connect(ui->opensecond,&QPushButton::clicked,this,&MainWindow::open2);
+    connect(ui->spinBox,SIGNAL(valueChanged(int)),this,SLOT(pa(int)));
 
 }
 //выводит подсказку для нового объекта
@@ -476,8 +476,18 @@ void MainWindow::addobgect()
     cursor=0;
     cursor2=0;
     putdata(0,cot,n);
-    ui->lim1->setText(QString(dada.toChar(curbast.size())));
-    ui->spinBox->setValue(curbast.size());
+    int t=curbast.size();
+    ui->lim1->setText(QString(dada.toChar(t)));
+    ui->spinBox->setMaximum(t);
+    if(ui->spinBox->value()==t)
+    {
+        showdata(t,true);
+    }
+    else
+    {
+        ui->spinBox->setValue(t);
+
+    }
     connect(ui->savenew,&QPushButton::clicked,this,&MainWindow::save);
     ui->status2->setText("нет ошибок");
 }
@@ -581,7 +591,14 @@ void MainWindow::load()
             connect(ui->del1,&QPushButton::clicked,this,&MainWindow::delone);
             connect(ui->opensecond,&QPushButton::clicked,this,&MainWindow::open2);
             wrex(cot);
-            ui->spinBox->setValue(curbast.size());
+            int tarabara=curbast.size();
+
+            ui->spinBox->setMaximum(tarabara);
+            if(ui->spinBox->value()!=tarabara)ui->spinBox->setValue(tarabara);
+            else
+            {
+                showdata(1,true);
+            }
             ui->lim1->setText(QString(dada.toChar(curbast.size())));
             ui->status2->setText("нет ошибок");
         }
@@ -611,7 +628,7 @@ void MainWindow::showdata(int nomber,bool where)
         limit=curbast.size();
         if(limit)
         {
-            ui->spinBox->setMaximum(limit);
+            //ui->spinBox->setMaximum(limit);
             ui->datalist->clear();
             if(i>=limit)
             {
@@ -620,7 +637,6 @@ void MainWindow::showdata(int nomber,bool where)
             cursor2=0;
             cursor=0;
             ui->lim1->setText(QString(dada.toChar(limit)));
-            //ui->spinBox->setValue(nomber);
             ui->datalist->insertPlainText(QString("\n"));
             pd(0,cot,curbast[i],true);
         }
@@ -628,6 +644,8 @@ void MainWindow::showdata(int nomber,bool where)
         {
             ui->datalist->clear();
             ui->lim1->setText(QString("0"));
+            ui->spinBox->setMaximum(1);
+
         }
     }
     else
@@ -635,16 +653,21 @@ void MainWindow::showdata(int nomber,bool where)
         limit=second.size();
         if(limit)
         {
-            //limit=dada.wasfound.size();
-            ui->spinBox2->setMaximum(limit);
+            //ui->spinBox2->setMaximum(limit);
             ui->datalist2->clear();
-            //if(i>=limit)i=limit-1;
+            if(i>=limit)i=limit-1;
             cursor2=0;
             cursor=0;
-            //ui->spinBox2->setValue(nomber);
+            ui->lim2->setText(QString(dada.toChar(limit)));
             ui->datalist2->insertPlainText(QString("\n"));
-            //j=(dada.wasfound)[i];
             pd(0,cot,second[i],false);
+
+        }
+        else
+        {
+            ui->datalist->clear();
+            ui->lim1->setText(QString("0"));
+            ui->spinBox2->setMaximum(1);
 
         }
     }
@@ -730,13 +753,13 @@ void MainWindow::serch()
     if(rbres)
     {
         dada.sp=&curbast;
-        pat=dada.interpritator(u);
     }
     else//--------------------------------тут какая-то трабла
     {
         dada.sp=&second;
-        pat=dada.interpritator(u);
     }
+    pat=dada.interpritator(u);
+
     int i;
 
     if(pat>0)
@@ -751,11 +774,12 @@ void MainWindow::serch()
             {
                 second.push_back(curbast[((dada.wasfound)[i])]);
             }
+            ui->obrab->setText(QString("Обработка основной \nбазы"));
 
         }
         else
         {
-            vector<void*>nosta=second;
+            vector<void*> nosta=second;
             second.resize(0);
             for(i=0;i<dop;i++)
             {
@@ -766,8 +790,19 @@ void MainWindow::serch()
         connect(ui->del2,&QPushButton::clicked,this,&MainWindow::dellist);
         connect(ui->spinBox2,SIGNAL(valueChanged(int)),this,SLOT(ha(int)));
         connect(ui->V,&QPushButton::clicked,this,&MainWindow::obiedin);
+        connect(ui->A,&QPushButton::clicked,this,&MainWindow::peresek);
 
-        ui->spinBox2->setValue(dop+1);//--------------------------------где-то тут зарыта еще одна собака
+        ui->spinBox2->setMaximum(dop);
+        if(dop==ui->spinBox2->value())
+        {
+            showdata(1,false);//--------------------------------где-то тут зарыта еще одна собака
+
+        }
+        else
+        {
+            ui->spinBox2->setValue(dop);
+
+        }
     }
     else
     {
@@ -789,23 +824,29 @@ void MainWindow::serch()
 //------------------------реакция на изменение во втором
 void MainWindow::ha(int aa)
 {
-    if(aa>0)
-    {
-        showdata(aa,false);
-    }
+    if(aa<1)aa=1;
+    showdata(aa,false);
+
 
 }
-
+//-------------------------реакция на кнопку единичного удаления
 void MainWindow::delone()
 {
     int n=ui->spinBox->value()-1;
     delel(n);
     int s=curbast.size();
-    if(n==s)n--;
-    //showdata(n+1,true);
-    ui->spinBox->setValue(n+1);
+    if(n>=s)n=s-1;
+    ui->spinBox->setMaximum(n+1);
+    if(ui->spinBox->value()==n+1)
+    {
+        showdata(n+1,true);
+    }
+    else
+    {
+        ui->spinBox->setValue(n+1);
+    }
 }
-
+//---------------------------------функция удаления элемента
 void MainWindow::delel(int p)
 {
     int i;
@@ -817,7 +858,7 @@ void MainWindow::delel(int p)
     }
     curbast.resize(s);
 }
-
+//-------------------------------реакция на кнопку "удалить список"
 void MainWindow::dellist()
 {
     int i,j;
@@ -834,14 +875,21 @@ void MainWindow::dellist()
             {
                 delel(j);
                 s=curbast.size();
+                break;
             }
         }
     }
-    //showdata(s,true);
-    ui->spinBox->setValue(s);
-
+    ui->spinBox->setMaximum(s);
+    if(ui->spinBox->value()==s)
+    {
+        showdata(s,true);
+    }
+    else
+    {
+        ui->spinBox->setValue(s);
+    }
 }
-
+//--------------------------открыть допбазу
 void MainWindow::open2()
 {
     QString*st1= new QString("kkk");
@@ -867,9 +915,14 @@ void MainWindow::open2()
             connect(ui->serch,&QPushButton::clicked,this,&MainWindow::serch);
             connect(ui->del1,&QPushButton::clicked,this,&MainWindow::delone);
             connect(ui->V,&QPushButton::clicked,this,&MainWindow::obiedin);
+            connect(ui->A,&QPushButton::clicked,this,&MainWindow::peresek);
+
+            ui->spinBox2->setMaximum(second.size());
             ui->spinBox2->setValue(second.size());
             ui->lim2->setText(QString(dada.toChar(curbast.size())));
             ui->status3->setText("нет ошибок");
+            ui->obrab->setText(QString("Обработка второй \nбазы"));
+
         }
     }
     else
@@ -879,26 +932,66 @@ void MainWindow::open2()
     f.close();
 
 }
-
+//---------------------------------реакция на кнопку "объединить"
 void MainWindow::obiedin()
 {
    int i,j,c;
    int s=curbast.size();
    int s2=second.size();
-   for(i=0;i<s2;i++)
+   for(i=0;i<s;i++)
    {
-       c=0;
-       for(j=0;j<s;j++)
+       for(j=0;j<s2;j++)
        {
-           if(dada.chekidentity(0,&c,cot,second[i],curbast[j]))//сравниваетм содержимое. если равно
+           c=0;
+           if(dada.chekidentity(0,&c,cot,second[j],curbast[i]))//сравниваетм содержимое. если равно
            {
-               second[i]=curbast[j];
+               second[j]=curbast[i];
                break;
            }
 
        }
-       if(j==s)second.push_back(curbast[j]);
+       if(j==s2)
+       {
+           second.push_back(curbast[i]);
+       }
    }
+   s2=second.size();
+   ui->spinBox2->setMaximum(s2);
+   if(s2==ui->spinBox2->value())showdata(s2,false);
+   else
+   {
+       ui->spinBox2->setValue(s2);
+   }
+   ui->obrab->setText(QString("Обработка основной \nбазы"));
+}
+
+void MainWindow::peresek()
+{
+    int i,j,c;
+    int s=curbast.size();
+    int s2=second.size();
+    vector<void*>vena=second;
+    second.resize(0);
+    for(i=0;i<s;i++)
+    {
+        for(j=0;j<s2;j++)
+        {
+            c=0;
+            if(dada.chekidentity(0,&c,cot,vena[j],curbast[i]))//сравниваетм содержимое. если равно
+            {
+                second.push_back(curbast[i]);
+            }
+
+        }
+    }
+    s2=second.size();
+    ui->spinBox2->setMaximum(s2);
+    if(s2==ui->spinBox2->value())showdata(s2,false);
+    else
+    {
+        ui->spinBox2->setValue(s2);
+    }
+    ui->obrab->setText(QString("Обработка основной \nбазы"));
 }
 
 MainWindow::~MainWindow()

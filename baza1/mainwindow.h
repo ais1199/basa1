@@ -48,7 +48,7 @@ public:
     void tdp();
     void showdata(int, bool);
     void pd(int,obinf*,void*,bool);
-    void upd();
+    //void upd();
     void fpl();
     void fsp();
     void wrex(obinf*);
