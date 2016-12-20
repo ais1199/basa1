@@ -43,6 +43,7 @@ public:
     void loading(QString,vector<void*>*);
     void getdata(int,obinf*);
 
+    bool chekidentity(int,int*,obinf*,void*,void*);
     int interpritator(char*);
     int getint(char*,void*);
     char* getchar(char*,void*);

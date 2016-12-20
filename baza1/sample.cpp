@@ -619,3 +619,50 @@ char* Sample::getchar(char*text,void*where)
         return text;
     }
 }
+
+bool Sample::chekidentity(int n,int*cursor,obinf*inf,void* first,void*second)
+{
+    vector<part> urur=inf->parts;
+    int s=urur.size();
+    if(n<s)
+    {
+        char a[]="int";
+        char b[]="char";
+        //char buf[128];
+        bool ok=true;
+        char *u,*u2;
+        part pp=urur[n];
+        obinf*nana;
+        //QString aa,bb;
+        int j,i;
+        if(0==strcmp(a,pp.tipe)*strcmp(b,pp.tipe))
+        {
+            if(0==strcmp(a,pp.tipe))
+            {
+                //aa=QString(buf);
+                //bb=aa.section('\r',0,0);
+                i=*((int*)(first+*cursor));
+                j=*((int*)(second+*cursor));
+                if(i!=j)return false;
+                (*cursor)+=sizeof(int);
+            }
+            else
+            {
+                u=*((char**)(first+*cursor));
+                u2=*((char**)(second+*cursor));
+                //provc=*((char**)(whattoput+place));
+                if(strcmp(u,u2))return false;
+                (*cursor)+=sizeof(char*);
+            }
+        }
+        else
+        {
+            nana=fo(pp.tipe);
+            if(nana!=zerobase)ok=chekidentity(0,cursor,nana,first,second);
+            if(!ok)return false;
+        }
+        if(!chekidentity(n+1,cursor,inf,first,second))return false;
+
+    }
+    return true;
+}

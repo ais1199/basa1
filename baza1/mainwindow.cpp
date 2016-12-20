@@ -20,6 +20,7 @@ MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow)
 {
+    printf("MWStart\n");
     ui->setupUi(this);
     QDir d;
     currentdir=d.currentPath()+QString("/debug/dops");
@@ -27,6 +28,7 @@ MainWindow::MainWindow(QWidget *parent) :
     obbase=&(dada.baza);
     zeroobinf=dada.zerobase;
     loadobinfo();
+    printf("afterloading\n");
     newob=(struct obinf *)malloc(1*sizeof(struct obinf));
     ui->example->setReadOnly(true);
     ui->datalist->setReadOnly(true);
@@ -61,6 +63,7 @@ void MainWindow::radioreaction2(bool res)
 //Загрузка информации об уже созданных типах
 void MainWindow::loadobinfo()
 {
+    printf("loaddatabase\n");
     QString n=currentdir+QString("/ob.txt");
     QFile f(n);
 
@@ -78,19 +81,21 @@ void MainWindow::loadobinfo()
     cur->name=buf1;
     cur->size=sizeof(int);
     obbase->push_back(cur);
-
+    printf("tutok?\n");
     if(f.open(QIODevice::ReadOnly))
     {
         char buf[128];
         int k=0;
         bool ok;
         QString aa,bb,cc,i;
+        printf("file is opened, vse putem\n");
         while(!f.atEnd())
         {
             f.readLine(buf,128);
             bb=QString(buf);
             cc=bb.section("\r",0,0);
             aa=cc.section(" ",0,0);
+            //printf("samiy\n");
             if(aa==QString("name"))
             {
                 for(k=5;buf[k]!='\r';k++)
@@ -100,6 +105,7 @@ void MainWindow::loadobinfo()
                 buf[k]='\0';
                 cur=(struct obinf*)malloc(1*sizeof(struct obinf));
                 cur->name=(char*)malloc((k-4)*sizeof(char));
+                cur->parts.resize(0);
                 obbase->push_back(cur);
                 strcpy(cur->name,(buf+5));
             }
@@ -112,10 +118,12 @@ void MainWindow::loadobinfo()
             }
             if(cc==QString("consist"))
             {
+                printf("consist\n");
                 vector<part>*curp=&(cur->parts);
                 part pp;
                 while(f.readLine(buf,128))
                 {
+                    printf("tut-to che ne tak?\n");
                     if(buf[0]!=' ')break;
                     bb=QString(buf);
                     cc=bb.section("\r",0,0);
@@ -128,16 +136,21 @@ void MainWindow::loadobinfo()
                     pp.tipe=makechar(aa);
                     aa=bb.section("|",1,1);
                     pp.name=makechar(aa);
+                    printf("I'm still alife!?\n");
                     curp->push_back(pp);
+                    printf("da ladno, chto ne tak!?\n");
                 }
             }
+            printf("done\n");
         }
-        f.close();
+        printf("file is ended\n");
     }
     else
     {
         ui->status->setText("список баз пуст");
     }
+    f.close();
+    printf("eto konets\n");
 
 }
 
@@ -406,6 +419,9 @@ void MainWindow::createDok()
     curbast.resize(0);
     ui->status2->setText("нет ошибок");
     connect(ui->serch,&QPushButton::clicked,this,&MainWindow::serch);
+    connect(ui->del1,&QPushButton::clicked,this,&MainWindow::delone);
+    connect(ui->opensecond,&QPushButton::clicked,this,&MainWindow::open2);
+
 }
 //выводит подсказку для нового объекта
 void MainWindow::wrex(obinf*inf)
@@ -461,7 +477,7 @@ void MainWindow::addobgect()
     cursor2=0;
     putdata(0,cot,n);
     ui->lim1->setText(QString(dada.toChar(curbast.size())));
-    showdata(curbast.size()+1,true);
+    ui->spinBox->setValue(curbast.size());
     connect(ui->savenew,&QPushButton::clicked,this,&MainWindow::save);
     ui->status2->setText("нет ошибок");
 }
@@ -559,11 +575,14 @@ void MainWindow::load()
             cot=dada.fo(buf);
 
             connect(ui->savenew,&QPushButton::clicked,this,&MainWindow::save);
-            showdata(curbast.size(),true);
-            ui->lim1->setText(QString(dada.toChar(curbast.size())));
+
             connect(ui->spinBox,SIGNAL(valueChanged(int)),this,SLOT(pa(int)));
             connect(ui->serch,&QPushButton::clicked,this,&MainWindow::serch);
+            connect(ui->del1,&QPushButton::clicked,this,&MainWindow::delone);
+            connect(ui->opensecond,&QPushButton::clicked,this,&MainWindow::open2);
             wrex(cot);
+            ui->spinBox->setValue(curbast.size());
+            ui->lim1->setText(QString(dada.toChar(curbast.size())));
             ui->status2->setText("нет ошибок");
         }
     }
@@ -571,6 +590,7 @@ void MainWindow::load()
     {
         ui->status2->setText("ошибка загрузки");
     }
+    f.close();
 }
 //------------------------------------функция, реагирующая на изменение
 void MainWindow::pa(int point)
@@ -584,25 +604,38 @@ void MainWindow::showdata(int nomber,bool where)
 {
     //vector<part> pp=cot->parts;
     int i=nomber-1;
-    int limit,j;
+    int limit;
     if(i<0)i=0;
     if(where)
     {
         limit=curbast.size();
-        ui->spinBox->setMaximum(limit);
-        ui->datalist->clear();
-        //if(i>=limit)i=limit-1;
-        cursor2=0;
-        cursor=0;
-        ui->spinBox->setValue(nomber);
-        ui->datalist->insertPlainText(QString("\n"));
-        pd(0,cot,curbast[i],true);
+        if(limit)
+        {
+            ui->spinBox->setMaximum(limit);
+            ui->datalist->clear();
+            if(i>=limit)
+            {
+                i=limit-1;
+            }
+            cursor2=0;
+            cursor=0;
+            ui->lim1->setText(QString(dada.toChar(limit)));
+            //ui->spinBox->setValue(nomber);
+            ui->datalist->insertPlainText(QString("\n"));
+            pd(0,cot,curbast[i],true);
+        }
+        else
+        {
+            ui->datalist->clear();
+            ui->lim1->setText(QString("0"));
+        }
     }
     else
     {
-        if(dada.wasfound.size())
+        limit=second.size();
+        if(limit)
         {
-            limit=dada.wasfound.size();
+            //limit=dada.wasfound.size();
             ui->spinBox2->setMaximum(limit);
             ui->datalist2->clear();
             //if(i>=limit)i=limit-1;
@@ -610,11 +643,12 @@ void MainWindow::showdata(int nomber,bool where)
             cursor=0;
             //ui->spinBox2->setValue(nomber);
             ui->datalist2->insertPlainText(QString("\n"));
-            j=(dada.wasfound)[i];
-            pd(0,cot,curbast[j],false);
-        }
+            //j=(dada.wasfound)[i];
+            pd(0,cot,second[i],false);
 
+        }
     }
+    ui->status3->setText("нет ошибок");
 
 }
 //----------------------------------------------------------рекурсивная функция для вывода данных
@@ -665,6 +699,7 @@ void MainWindow::pd(int n, obinf *inf, void *data,bool where)
             if(0==strcmp(b,pp.tipe))
             {
                 u=*((char**)(data+cursor2));
+                u=u;
                 bb=QString(u)+c;
                 if(where)ui->datalist->insertPlainText(bb);
                 else
@@ -699,46 +734,40 @@ void MainWindow::serch()
     }
     else//--------------------------------тут какая-то трабла
     {
-        vector<int>was=dada.wasfound;
-        dada.sp=&curbast;
+        dada.sp=&second;
         pat=dada.interpritator(u);
-        if(pat>0)
-        {
-            vector<int>now=dada.wasfound;
-            dada.wasfound.resize(0);
-            int i,j;
-            j=0;
-            int d=was.size();
-            int d2=now.size();
-            for(i=0;i<d;)
-            {
-                if(j==d2)break;
-                if(was[i]<now[j])
-                {
-                    i++;
-                }
-                else
-                {
-                    if(was[i]==now[j])
-                    {
-                        dada.wasfound.push_back(was[i]);
-                        i++;
-                    }
-
-                    j++;
-                }
-            }
-        }
-
     }
+    int i;
+
     if(pat>0)
     {
         int dop=dada.wasfound.size();
         ui->lim2->setText(QString(dada.toChar(dop)));
         ui->spinBox2->setMaximum(dop);
-        //showdata(dop,false);
+        if(rbres)
+        {
+            second.resize(0);
+            for(i=0;i<dop;i++)
+            {
+                second.push_back(curbast[((dada.wasfound)[i])]);
+            }
+
+        }
+        else
+        {
+            vector<void*>nosta=second;
+            second.resize(0);
+            for(i=0;i<dop;i++)
+            {
+                second.push_back(nosta[((dada.wasfound)[i])]);
+            }
+
+        }
+        connect(ui->del2,&QPushButton::clicked,this,&MainWindow::dellist);
         connect(ui->spinBox2,SIGNAL(valueChanged(int)),this,SLOT(ha(int)));
-        ui->spinBox2->setValue(dop+1);
+        connect(ui->V,&QPushButton::clicked,this,&MainWindow::obiedin);
+
+        ui->spinBox2->setValue(dop+1);//--------------------------------где-то тут зарыта еще одна собака
     }
     else
     {
@@ -746,6 +775,14 @@ void MainWindow::serch()
         {
             ui->datalist2->clear();
             ui->lim2->setText(QString("0"));
+            //int dd=second.size();
+
+            second.resize(0);
+        }
+        else
+        {
+            ui->status3->setText("ошибка в строке поиска");
+
         }
     }
 }
@@ -754,11 +791,114 @@ void MainWindow::ha(int aa)
 {
     if(aa>0)
     {
-        vector<int>ii=dada.wasfound;
-        int s=(ii[aa-1]);
-        showdata(s,false);
+        showdata(aa,false);
     }
 
+}
+
+void MainWindow::delone()
+{
+    int n=ui->spinBox->value()-1;
+    delel(n);
+    int s=curbast.size();
+    if(n==s)n--;
+    //showdata(n+1,true);
+    ui->spinBox->setValue(n+1);
+}
+
+void MainWindow::delel(int p)
+{
+    int i;
+    int s=curbast.size()-1;
+    //free(curbast[p]);//----------------------------очень скользкий момент
+    for(i=p;i<s;i++)
+    {
+        curbast[i]=curbast[i+1];
+    }
+    curbast.resize(s);
+}
+
+void MainWindow::dellist()
+{
+    int i,j;
+
+    int s=curbast.size();
+    int s2=second.size();
+    //int n;
+    j=0;
+    for(i=0;i<s2;i++)
+    {
+        for(j=0;j<s;j++)
+        {
+            if(curbast[j]==second[i])
+            {
+                delel(j);
+                s=curbast.size();
+            }
+        }
+    }
+    //showdata(s,true);
+    ui->spinBox->setValue(s);
+
+}
+
+void MainWindow::open2()
+{
+    QString*st1= new QString("kkk");
+    QString c=currentdir+QString("/")+*st1+QString(".txt");
+    QFile f(c);
+    char buf[128];
+    if(f.open(QIODevice::ReadOnly))
+    {
+        f.readLine(buf,128);
+        f.close();
+        if(dada.fo(buf)==cot)
+        {
+            //QString*st2= new QString(buf);
+            //ui->Curbase->setText(*st1);
+            //ui->Curbasetipe->setText(*st2);
+            second.resize(0);
+            dada.loading(c,&second);
+            //cot=dada.fo(buf);
+
+            //connect(ui->savenew,&QPushButton::clicked,this,&MainWindow::save);
+
+            connect(ui->spinBox2,SIGNAL(valueChanged(int)),this,SLOT(ha(int)));
+            connect(ui->serch,&QPushButton::clicked,this,&MainWindow::serch);
+            connect(ui->del1,&QPushButton::clicked,this,&MainWindow::delone);
+            connect(ui->V,&QPushButton::clicked,this,&MainWindow::obiedin);
+            ui->spinBox2->setValue(second.size());
+            ui->lim2->setText(QString(dada.toChar(curbast.size())));
+            ui->status3->setText("нет ошибок");
+        }
+    }
+    else
+    {
+        ui->status3->setText("ошибка загрузки");
+    }
+    f.close();
+
+}
+
+void MainWindow::obiedin()
+{
+   int i,j,c;
+   int s=curbast.size();
+   int s2=second.size();
+   for(i=0;i<s2;i++)
+   {
+       c=0;
+       for(j=0;j<s;j++)
+       {
+           if(dada.chekidentity(0,&c,cot,second[i],curbast[j]))//сравниваетм содержимое. если равно
+           {
+               second[i]=curbast[j];
+               break;
+           }
+
+       }
+       if(j==s)second.push_back(curbast[j]);
+   }
 }
 
 MainWindow::~MainWindow()

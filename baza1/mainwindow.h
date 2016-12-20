@@ -33,6 +33,7 @@ public:
     int ctsize;
     int curbsize;
     vector<void*>curbast;
+    vector<void*>second;
     int nwba;
     //ob*zerodata;
     //obinf*fo(char*);
@@ -53,6 +54,13 @@ public:
     void wrex(obinf*);
     void updmlist();
     void serch();
+    void delel(int);
+    void delone();
+    void dellist();
+    void open2();
+    void obiedin();
+    void peresek();
+
 
     void nxt1();
     void prv1();

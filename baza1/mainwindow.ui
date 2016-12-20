@@ -531,7 +531,7 @@
       <x>550</x>
       <y>0</y>
       <width>241</width>
-      <height>321</height>
+      <height>351</height>
      </rect>
     </property>
     <property name="frameShape">
@@ -572,9 +572,9 @@
     <widget class="QLineEdit" name="log">
      <property name="geometry">
       <rect>
-       <x>22</x>
-       <y>80</y>
-       <width>201</width>
+       <x>12</x>
+       <y>50</y>
+       <width>221</width>
        <height>20</height>
       </rect>
      </property>
@@ -583,7 +583,7 @@
      <property name="geometry">
       <rect>
        <x>10</x>
-       <y>110</y>
+       <y>70</y>
        <width>221</width>
        <height>61</height>
       </rect>
@@ -601,9 +601,9 @@
     <widget class="QPushButton" name="serch">
      <property name="geometry">
       <rect>
-       <x>20</x>
-       <y>50</y>
-       <width>75</width>
+       <x>184</x>
+       <y>10</y>
+       <width>51</width>
        <height>23</height>
       </rect>
      </property>
@@ -611,12 +611,12 @@
       <string>искать</string>
      </property>
     </widget>
-    <widget class="QPushButton" name="pushButton_3">
+    <widget class="QPushButton" name="del1">
      <property name="geometry">
       <rect>
        <x>10</x>
-       <y>170</y>
-       <width>211</width>
+       <y>130</y>
+       <width>221</width>
        <height>23</height>
       </rect>
      </property>
@@ -624,12 +624,12 @@
       <string>Удалить просматриваемый элемент</string>
      </property>
     </widget>
-    <widget class="QPushButton" name="pushButton_4">
+    <widget class="QPushButton" name="del2">
      <property name="geometry">
       <rect>
        <x>10</x>
-       <y>200</y>
-       <width>211</width>
+       <y>160</y>
+       <width>221</width>
        <height>23</height>
       </rect>
      </property>
@@ -637,12 +637,12 @@
       <string>Удалить отсортированные элименты</string>
      </property>
     </widget>
-    <widget class="QPushButton" name="pushButton_5">
+    <widget class="QPushButton" name="opensecond">
      <property name="geometry">
       <rect>
        <x>10</x>
-       <y>230</y>
-       <width>211</width>
+       <y>250</y>
+       <width>221</width>
        <height>23</height>
       </rect>
      </property>
@@ -650,17 +650,56 @@
       <string>Открыть дополнительный фаил</string>
      </property>
     </widget>
-    <widget class="QPushButton" name="pushButton_6">
+    <widget class="QPushButton" name="V">
      <property name="geometry">
       <rect>
        <x>10</x>
-       <y>260</y>
-       <width>75</width>
+       <y>280</y>
+       <width>101</width>
        <height>23</height>
       </rect>
      </property>
      <property name="text">
-      <string>PushButton</string>
+      <string>Объединить</string>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="A">
+     <property name="geometry">
+      <rect>
+       <x>120</x>
+       <y>280</y>
+       <width>111</width>
+       <height>23</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Найти пересечение</string>
+     </property>
+    </widget>
+    <widget class="QLabel" name="label_19">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>190</y>
+       <width>221</width>
+       <height>51</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Удаление производится только &lt;br/&gt;в основной базе (первое окно)&lt;br/&gt;и только элементов найденных &lt;br/&gt;в ней, а не во второй базе.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+     </property>
+    </widget>
+    <widget class="QLabel" name="label_20">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>310</y>
+       <width>221</width>
+       <height>31</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Результат любых операций кроме &lt;br/&gt;удаления выводится во втором окне&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
      </property>
     </widget>
    </widget>
@@ -762,9 +801,9 @@
     <property name="geometry">
      <rect>
       <x>550</x>
-      <y>320</y>
+      <y>350</y>
       <width>241</width>
-      <height>221</height>
+      <height>191</height>
      </rect>
     </property>
     <property name="frameShape">
@@ -779,7 +818,7 @@
        <x>10</x>
        <y>40</y>
        <width>221</width>
-       <height>111</height>
+       <height>91</height>
       </rect>
      </property>
     </widget>
@@ -836,7 +875,7 @@
      <property name="geometry">
       <rect>
        <x>10</x>
-       <y>160</y>
+       <y>140</y>
        <width>91</width>
        <height>23</height>
       </rect>
@@ -849,9 +888,9 @@
      <property name="geometry">
       <rect>
        <x>-1</x>
-       <y>190</y>
+       <y>170</y>
        <width>241</width>
-       <height>31</height>
+       <height>21</height>
       </rect>
      </property>
      <property name="frameShape">
@@ -864,7 +903,7 @@
       <property name="geometry">
        <rect>
         <x>10</x>
-        <y>10</y>
+        <y>0</y>
         <width>47</width>
         <height>16</height>
        </rect>
@@ -877,7 +916,7 @@
       <property name="geometry">
        <rect>
         <x>60</x>
-        <y>10</y>
+        <y>0</y>
         <width>171</width>
         <height>16</height>
        </rect>
@@ -886,6 +925,19 @@
        <string>нет ошибок</string>
       </property>
      </widget>
+    </widget>
+    <widget class="QLabel" name="label_21">
+     <property name="geometry">
+      <rect>
+       <x>110</x>
+       <y>130</y>
+       <width>121</width>
+       <height>41</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Обработка основного &lt;br/&gt;фаила&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+     </property>
     </widget>
    </widget>
   </widget>
