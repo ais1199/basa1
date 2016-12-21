@@ -4,7 +4,7 @@
 
 Sample::Sample()
 {
-
+    baza=vector<obinf*>();
 }
 //делает из числа строку
 char* Sample::toChar(int n)
@@ -194,9 +194,9 @@ int Sample::interpritator(char*text)
     char b[]="char";
     bool result=true;
     //bool action;
-    vector<int>res;
-    vector<int>myres;
-    vector<int>itsres;
+    vector<int>res=vector<int>();
+    vector<int>myres=vector<int>();
+    vector<int>itsres=vector<int>();
     int i,j;
     int dop,l;
 

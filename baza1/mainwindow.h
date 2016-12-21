@@ -24,6 +24,8 @@ public:
     void givesize();
     int sizeofob(char*);
 
+    void saveas1();
+    void saveas2();
     void createDok();
 
     void tester();
@@ -82,8 +84,8 @@ public:
 public slots:
     void pa(int);
     void ha(int);
-    void radioreaction(bool);
-    void radioreaction2(bool);
+    void radioreaction();
+    void radioreaction2();
 
 
 private:

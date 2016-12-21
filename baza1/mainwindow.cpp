@@ -12,7 +12,8 @@
 #include <QPlainTextEdit>
 #include <QListWidget>
 #include <QSpinBox>
-
+#include <QDialog>
+#include <QFileDialog>
 //Запуск виджета в исходном виде.
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -45,15 +46,15 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(ui->loadbase,&QPushButton::clicked,this,&MainWindow::load);
     connect(ui->freelist,&QPushButton::clicked,this,&MainWindow::fpl);
     connect(ui->delob,&QPushButton::clicked,this,&MainWindow::fsp);
-    connect(ui->radioButton,SIGNAL(clicked(bool)),this,SLOT(radioreaction(bool)));
-    connect(ui->radioButton_2,SIGNAL(clicked(bool)),this,SLOT(radioreaction2(bool)));
+    connect(ui->radioButton,SIGNAL(clicked(bool)),this,SLOT(radioreaction()));
+    connect(ui->radioButton_2,SIGNAL(clicked(bool)),this,SLOT(radioreaction2()));
 
 }
-void MainWindow::radioreaction(bool res)
+void MainWindow::radioreaction()
 {
     rbres=true;
 }
-void MainWindow::radioreaction2(bool res)
+void MainWindow::radioreaction2()
 {
     rbres=false;
 }
@@ -86,14 +87,12 @@ void MainWindow::loadobinfo()
         int k=0;
         bool ok;
         QString aa,bb,cc,i;
-        printf("file is opened, vse putem\n");
         while(!f.atEnd())
         {
             f.readLine(buf,128);
             bb=QString(buf);
             cc=bb.section("\r",0,0);
             aa=cc.section(" ",0,0);
-            //printf("samiy\n");
             if(aa==QString("name"))
             {
                 for(k=5;buf[k]!='\r';k++)
@@ -103,7 +102,7 @@ void MainWindow::loadobinfo()
                 buf[k]='\0';
                 cur=(struct obinf*)malloc(1*sizeof(struct obinf));
                 cur->name=(char*)malloc((k-4)*sizeof(char));
-                cur->parts.resize(0);
+                cur->parts=vector<part>();
                 obbase->push_back(cur);
                 strcpy(cur->name,(buf+5));
             }
@@ -116,12 +115,11 @@ void MainWindow::loadobinfo()
             }
             if(cc==QString("consist"))
             {
-                printf("consist\n");
+                //cur->parts=vector<part>();
                 vector<part>*curp=&(cur->parts);
                 part pp;
                 while(f.readLine(buf,128))
                 {
-                    printf("tut-to che ne tak?\n");
                     if(buf[0]!=' ')break;
                     bb=QString(buf);
                     cc=bb.section("\r",0,0);
@@ -134,14 +132,12 @@ void MainWindow::loadobinfo()
                     pp.tipe=makechar(aa);
                     aa=bb.section("|",1,1);
                     pp.name=makechar(aa);
-                    printf("I'm still alife!?\n");
-                    curp->push_back(pp);
+                    printf("eee\n");
+                    cur->parts.push_back(pp);
                     printf("da ladno, chto ne tak!?\n");
                 }
             }
-            printf("done\n");
         }
-        printf("file is ended\n");
         updmlist();
     }
     else
@@ -149,12 +145,12 @@ void MainWindow::loadobinfo()
         ui->status->setText("список баз пуст");
     }
     f.close();
-    printf("eto konets\n");
 
 }
 //----------------------------выписывает в большое окно список того что есть
 void MainWindow::updmlist()
 {
+    printf("159\n");
     int i,j,d;
     vector<obinf*> m=*obbase;
     int dop=m.size();
@@ -182,6 +178,7 @@ void MainWindow::updmlist()
 //делает из КуСтринг обячную строку.
 char* MainWindow::makechar(QString text)
 {
+    printf("187\n");
     int n=text.size();
     QChar *kuchar=text.data();
     char*res=(char*)malloc((n+1)*sizeof(char));
@@ -199,6 +196,7 @@ char* MainWindow::makechar(QString text)
 //определяет размер создаваемого типа структуры
 void MainWindow::givesize()
 {
+    printf("205\n");
     int s=0;
     int j;
     vector<part>uk=newob->parts;
@@ -408,8 +406,10 @@ void MainWindow::createDok()
     char*ii=makechar(ui->nbtipe->text());
     cot=dada.fo(ii);
     if(cot==zeroobinf)exit(252);
-    QString*st1= new QString(ui->nbplase->text());
+    QString st= QString(ui->nbplase->text());
     QString*st2= new QString(ui->nbtipe->text());
+    QString dir=QFileDialog::getExistingDirectory(this,"Место сохранения","");
+    QString*st1= new QString(dir+QString("/")+st);
     ui->Curbase->setText(*st1);
     ui->Curbasetipe->setText(*st2);
     ui->example->clear();
@@ -489,6 +489,7 @@ void MainWindow::addobgect()
 
     }
     connect(ui->savenew,&QPushButton::clicked,this,&MainWindow::save);
+    connect(ui->sas1,&QPushButton::clicked,this,&MainWindow::saveas1);
     ui->status2->setText("нет ошибок");
 }
 //рекурсивная функция записи данных
@@ -501,10 +502,8 @@ void MainWindow::putdata(int n,obinf*inf, void *data)
         char a[]="int";
         char b[]="char";
         bool ok;
-        //void*d;
         char *u;
         part pp=urur[n];
-        //vector<part> pp=inf->parts;
         obinf*nana;
         QString s;
         QString c=QString("\n");
@@ -540,35 +539,29 @@ void MainWindow::putdata(int n,obinf*inf, void *data)
 //реакция на кнопку "сохранить"
 void MainWindow::save()
 {
-    QString c=currentdir+QString("/")+ui->Curbase->text()+QString(".txt");
+    QString c=ui->Curbase->text()+QString(".txt");
     dada.pinf(c,curbast,cot);
     ui->status2->setText("сохранено");
 }
-//тестер
-/*
-void MainWindow::tester()
-{
-    int k;
-    void*data;
-    int i;
-    //zi=0;
-    char*j;
-    for(k=0;k<curbast.size();)
-    {
-        data=curbast[k];
-        i=*((int*)data);
-        //data+=sizeof(int*);
 
-        j=*((char**)(data+sizeof(int)));
-        k++;
-    }
+void MainWindow::saveas1()
+{
+    QString c=QFileDialog::getSaveFileName(this,"сохранить первую базу","")+QString(".txt");
+    dada.pinf(c,curbast,cot);
+    ui->status2->setText("сохранено");
 }
-*/
+
+void MainWindow::saveas2()
+{
+    QString c=QFileDialog::getSaveFileName(this,"сохранить вторую базу","")+QString(".txt");
+    dada.pinf(c,second,cot);
+    ui->status2->setText("сохранено");
+}
 //загрузить базу
 void MainWindow::load()
 {
-    QString*st1= new QString(ui->nbplase->text());
-    QString c=currentdir+QString("/")+*st1+QString(".txt");
+    //QString*st1= new QString(ui->nbplase->text());
+    QString c=QFileDialog::getOpenFileName(this,"открыть основной фаил","","*.txt");
     QFile f(c);
     char buf[128];
     if(f.open(QIODevice::ReadOnly))
@@ -578,13 +571,14 @@ void MainWindow::load()
         if(dada.fo(buf)!=zeroobinf)
         {
             QString*st2= new QString(buf);
-            ui->Curbase->setText(*st1);
+            ui->Curbase->setText(c);
             ui->Curbasetipe->setText(*st2);
             curbast.resize(0);
             dada.loading(c,&curbast);
             cot=dada.fo(buf);
 
             connect(ui->savenew,&QPushButton::clicked,this,&MainWindow::save);
+            connect(ui->sas1,&QPushButton::clicked,this,&MainWindow::saveas1);
 
             connect(ui->spinBox,SIGNAL(valueChanged(int)),this,SLOT(pa(int)));
             connect(ui->serch,&QPushButton::clicked,this,&MainWindow::serch);
@@ -619,7 +613,6 @@ void MainWindow::pa(int point)
 //_________________________________стартовая функция для того, чтобы показать фрагмент из базы данных
 void MainWindow::showdata(int nomber,bool where)
 {
-    //vector<part> pp=cot->parts;
     int i=nomber-1;
     int limit;
     if(i<0)i=0;
@@ -628,7 +621,6 @@ void MainWindow::showdata(int nomber,bool where)
         limit=curbast.size();
         if(limit)
         {
-            //ui->spinBox->setMaximum(limit);
             ui->datalist->clear();
             if(i>=limit)
             {
@@ -653,7 +645,6 @@ void MainWindow::showdata(int nomber,bool where)
         limit=second.size();
         if(limit)
         {
-            //ui->spinBox2->setMaximum(limit);
             ui->datalist2->clear();
             if(i>=limit)i=limit-1;
             cursor2=0;
@@ -754,7 +745,7 @@ void MainWindow::serch()
     {
         dada.sp=&curbast;
     }
-    else//--------------------------------тут какая-то трабла
+    else
     {
         dada.sp=&second;
     }
@@ -791,6 +782,8 @@ void MainWindow::serch()
         connect(ui->spinBox2,SIGNAL(valueChanged(int)),this,SLOT(ha(int)));
         connect(ui->V,&QPushButton::clicked,this,&MainWindow::obiedin);
         connect(ui->A,&QPushButton::clicked,this,&MainWindow::peresek);
+        connect(ui->sas2,&QPushButton::clicked,this,&MainWindow::saveas2);
+
 
         ui->spinBox2->setMaximum(dop);
         if(dop==ui->spinBox2->value())
@@ -810,8 +803,6 @@ void MainWindow::serch()
         {
             ui->datalist2->clear();
             ui->lim2->setText(QString("0"));
-            //int dd=second.size();
-
             second.resize(0);
         }
         else
@@ -892,8 +883,7 @@ void MainWindow::dellist()
 //--------------------------открыть допбазу
 void MainWindow::open2()
 {
-    QString*st1= new QString("kkk");
-    QString c=currentdir+QString("/")+*st1+QString(".txt");
+    QString c=QFileDialog::getOpenFileName(this,"открыть второй фаил","","*.txt");
     QFile f(c);
     char buf[128];
     if(f.open(QIODevice::ReadOnly))
@@ -902,20 +892,15 @@ void MainWindow::open2()
         f.close();
         if(dada.fo(buf)==cot)
         {
-            //QString*st2= new QString(buf);
-            //ui->Curbase->setText(*st1);
-            //ui->Curbasetipe->setText(*st2);
             second.resize(0);
             dada.loading(c,&second);
-            //cot=dada.fo(buf);
-
-            //connect(ui->savenew,&QPushButton::clicked,this,&MainWindow::save);
-
             connect(ui->spinBox2,SIGNAL(valueChanged(int)),this,SLOT(ha(int)));
             connect(ui->serch,&QPushButton::clicked,this,&MainWindow::serch);
             connect(ui->del1,&QPushButton::clicked,this,&MainWindow::delone);
             connect(ui->V,&QPushButton::clicked,this,&MainWindow::obiedin);
             connect(ui->A,&QPushButton::clicked,this,&MainWindow::peresek);
+
+            connect(ui->sas2,&QPushButton::clicked,this,&MainWindow::saveas2);
 
             ui->spinBox2->setMaximum(second.size());
             ui->spinBox2->setValue(second.size());
