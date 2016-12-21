@@ -602,7 +602,7 @@
       </rect>
      </property>
      <property name="text">
-      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Внимание! Данный интерпритатор &lt;br/&gt;выполняет только логические действия! &lt;br/&gt;Будьте внимательны при расстановке &lt;br/&gt;скобок! Читайте инструкцию.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Внимание! Данный интерпритатор &lt;br/&gt;выполняет только логические действия! &lt;br/&gt;Поиск производится по только по одному&lt;br/&gt;признаку. Читайте инструкцию.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
      </property>
      <property name="textFormat">
       <enum>Qt::AutoText</enum>
@@ -963,13 +963,6 @@
      <height>21</height>
     </rect>
    </property>
-   <widget class="QMenu" name="menu">
-    <property name="title">
-     <string>Меню</string>
-    </property>
-    <addaction name="action"/>
-   </widget>
-   <addaction name="menu"/>
   </widget>
   <widget class="QToolBar" name="mainToolBar">
    <attribute name="toolBarArea">
